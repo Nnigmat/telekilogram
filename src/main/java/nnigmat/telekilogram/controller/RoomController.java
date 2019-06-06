@@ -7,9 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/room")
@@ -30,6 +28,7 @@ public class RoomController {
         }});
     }};
 
+    /** Return the list of messages */
     @GetMapping
     public String list(Model model) {
         model.addAttribute("messages", messages);
@@ -37,18 +36,18 @@ public class RoomController {
         return "list";
     }
 
+    /** Add new message
+     *  After redirects to the list of messages */
     @PostMapping
     public String addMessage(
             @RequestParam(required = true, defaultValue = "") String user,
-            @RequestParam(required = true, defaultValue = "") String text,
-            Model model) {
+            @RequestParam(required = true, defaultValue = "") String text
+    ) {
         messages.add(new HashMap<String, String>() {{
             put("user", user);
             put("text", text);
         }});
 
-        model.addAttribute("messages", messages);
-
-        return "list";
+        return "redirect:/room";
     }
 }
