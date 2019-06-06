@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Telekilogram</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <div>
+        <form method="post">
+            <input type="text" name="user" placeholder="Login"><br>
+            <textarea name="text" placeholder="Your message"></textarea><br>
+            <button type="submit">Send message</button>
+        </form>
+    </div>
+    <hr>
+    <div>
+        <div th:each="msg : ${messages}">
+            <label th:text="${msg.get('user')}"/>
+            <p th:text="${msg.get('text')}"/>
+        </div>
+    </div>
+</body>
+</html>

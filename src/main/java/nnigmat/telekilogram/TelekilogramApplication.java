@@ -1,13 +1,13 @@
-package nnigmat.telekiliogram;
+package nnigmat.telekilogram;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class TelekiliogramApplication {
+public class TelekilogramApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TelekiliogramApplication.class, args);
+		SpringApplication.run(TelekilogramApplication.class, args);
 	}
 
 }
