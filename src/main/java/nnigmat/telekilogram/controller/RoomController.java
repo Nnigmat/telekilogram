@@ -33,7 +33,7 @@ public class RoomController {
     public String list(Model model) {
         model.addAttribute("messages", messages);
 
-        return "list";
+        return "main";
     }
 
     /** Add new message

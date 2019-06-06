@@ -11,12 +11,15 @@
             <textarea name="text" placeholder="Your message"></textarea><br>
             <button type="submit">Send message</button>
         </form>
+        <form action="@{/logout}" method="post">
+            <input type="submit" value="Sign Out" />
+        </form>
     </div>
     <hr>
     <div>
         <div th:each="msg : ${messages}">
-            <label th:text="${msg.get('user')}"/>
-            <p th:text="${msg.get('text')}"/>
+            <label th:text="${msg.get('user')}"></label>
+            <p th:text="${msg.get('text')}"></p>
         </div>
     </div>
 </body>
