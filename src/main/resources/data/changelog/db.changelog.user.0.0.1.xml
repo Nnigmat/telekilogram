@@ -1,0 +1,39 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="nnigmat">
+        <createTable tableName="usr" >
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"></constraints>
+            </column>
+
+            <column name="username" type="varchar(128)"></column>
+            <column name="email" type="varchar(128)"></column>
+            <column name="password" type="varchar(128)"></column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="nnigmat">
+        <insert tableName="usr">
+            <column name="username" value="admin"></column>
+            <column name="email" value="nnigmat@gmail.com"></column>
+            <column name="password" value="admin"></column>
+        </insert>
+
+        <insert tableName="usr">
+            <column name="username" value="nikita"></column>
+            <column name="email" value="nikita@gmail.com"></column>
+            <column name="password" value="nikita"></column>
+        </insert>
+
+        <insert tableName="usr">
+            <column name="username" value="vasya"></column>
+            <column name="email" value="vasya@gmail.com"></column>
+            <column name="password" value="vasya"></column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

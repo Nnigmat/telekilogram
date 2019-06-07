@@ -1,0 +1,39 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="nnigmat">
+        <createTable tableName="message">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"></constraints>
+            </column>
+            <column name="user" type="varchar(128)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="text" type="varchar(1024)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="nnigmat">
+        <insert tableName="message">
+            <column name="user" value="admin"></column>
+            <column name="text" value="Good day everybody!"></column>
+        </insert>
+
+        <insert tableName="message">
+            <column name="user" value="nikita"></column>
+            <column name="text" value="How is it going?)"></column>
+        </insert>
+
+        <insert tableName="message">
+            <column name="user" value="vasya"></column>
+            <column name="text" value="Vse normalno Vasya)"></column>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

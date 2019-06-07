@@ -20,8 +20,8 @@
     <hr>
     <div>
         <div th:each="msg : ${messages}">
-            <label th:text="${msg.get('user')}"></label>
-            <p th:text="${msg.get('text')}"></p>
+            <label th:text="${msg.getUser()}"></label>
+            <p th:text="${msg.getText()}"></p>
         </div>
     </div>
 </body>
