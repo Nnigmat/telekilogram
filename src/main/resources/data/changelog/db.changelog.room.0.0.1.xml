@@ -5,10 +5,16 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
     http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
+    <changeSet id="1" author="nnigmat">
+        <createTable tableName="room">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"></constraints>
+            </column>
 
-    <include file="data/changelog/db.changelog.user.0.0.1.xml"></include>
-    <include file="data/changelog/db.changelog.message.0.0.1.xml"></include>
-    <include file="data/changelog/db.changelog.user.0.0.2.xml"></include>
-    <include file="data/changelog/db.changelog.message.0.0.2.xml"></include>
-    <include file="data/changelog/db.changelog.room.0.0.1.xml"></include>
+            <column name="name" type="varchar(128)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
 </databaseChangeLog>
