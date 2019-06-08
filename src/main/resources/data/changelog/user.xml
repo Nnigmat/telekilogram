@@ -83,4 +83,19 @@
             </column>
         </addColumn>
     </changeSet>
+
+    <changeSet id="7" author="nnigmat">
+        <update tableName="user_role">
+            <column name="roles" value="ADMIN"></column>
+            <where>user_id = 1</where>
+        </update>
+        <update tableName="user_role">
+            <column name="roles" value="MODERATOR"></column>
+            <where>user_id = 2</where>
+        </update>
+        <update tableName="user_role">
+            <column name="roles" value="USER"></column>
+            <where>user_id = 3</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>
