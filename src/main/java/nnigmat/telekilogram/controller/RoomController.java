@@ -10,8 +10,10 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.awt.event.MouseEvent;
 import java.security.Principal;
 
 @Controller
@@ -32,7 +34,13 @@ public class RoomController {
         Iterable<Message> messages = messageRepo.findByRoom(roomFromDb);
         model.addAttribute("messages", messages);
         model.addAttribute("user", userFromDb);
+        model.addAttribute("room", roomFromDb);
 
         return "room";
+    }
+
+    @PostMapping
+    public void addMessage(Principal principal) {
+
     }
 }

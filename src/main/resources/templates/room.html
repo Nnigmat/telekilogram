@@ -2,9 +2,18 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Telekilogram: ${room.getName()}</title>
+    <title th:text="${room.getName()}"></title>
 </head>
 <body>
-
+    <div style="overflow-y:scroll;">
+        <div th:each="msg: ${messages}">
+            <i th:text="${msg.getUser().getUsername()}"></i>
+            <span th:text="${msg.getText()}"></span>
+        </div>
+    </div>
+    <form method="post">
+        <textarea></textarea>
+        <input type="submit" value="Send message">
+    </form>
 </body>
 </html>
