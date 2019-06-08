@@ -76,4 +76,11 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="6" author="nnigmat">
+        <addColumn tableName="usr">
+            <column name="current_room_id" type="bigint" defaultValue="1">
+                <constraints nullable="false"></constraints>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
