@@ -12,7 +12,8 @@
         </div>
     </div>
     <form method="post">
-        <textarea></textarea>
+        <textarea name="text" placeholder="Your message"></textarea>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <input type="submit" value="Send message">
     </form>
 </body>

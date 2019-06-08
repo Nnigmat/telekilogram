@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.awt.event.MouseEvent;
 import java.security.Principal;
@@ -40,7 +41,11 @@ public class RoomController {
     }
 
     @PostMapping
-    public void addMessage(Principal principal) {
+    public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
+        Message message = new Message(text, user.getCurrentRoom(), user);
 
+        messageRepo.save(message);
+
+        return "redirect:/room";
     }
 }
