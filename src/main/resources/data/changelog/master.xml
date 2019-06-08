@@ -7,4 +7,5 @@
 
     <include file="data/changelog/user.xml"></include>
     <include file="data/changelog/room.xml"></include>
+    <include file="data/changelog/message.xml"></include>
 </databaseChangeLog>
