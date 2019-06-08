@@ -1,0 +1,79 @@
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="nnigmat">
+        <createTable tableName="usr">
+            <column name="id" type="bigint" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"></constraints>
+            </column>
+            <column name="username" type="varchar(128)">
+                <constraints unique="true" nullable="false"></constraints>
+            </column>
+            <column name="password" type="varchar(128)">
+                <constraints nullable="false"></constraints>
+            </column>
+            <column name="active" type="bool" defaultValue="false"></column>
+            <column name="email" type="varchar(128)">
+                <constraints nullable="false" unique="true"></constraints>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="nnigmat">
+        <createTable tableName="user_role">
+            <column name="user_id" type="bigint">
+                <constraints unique="true" nullable="false"></constraints>
+            </column>
+            <column name="roles" type="varchar(128)">
+                <constraints nullable="false"></constraints>
+            </column>
+        </createTable>
+
+        <addPrimaryKey tableName="user_role" columnNames="user_id, roles"></addPrimaryKey>
+    </changeSet>
+
+    <changeSet id="3" author="nnigmat">
+        <insert tableName="usr">
+            <column name="username" value="admin"></column>
+            <column name="password" value="admin"></column>
+            <column name="email" value="admin@gmail.com"></column>
+        </insert>
+        <insert tableName="usr">
+            <column name="username" value="nikita"></column>
+            <column name="password" value="nikita"></column>
+            <column name="email" value="nikita@gmail.com"></column>
+        </insert>
+        <insert tableName="usr">
+            <column name="username" value="vasya"></column>
+            <column name="password" value="vasya"></column>
+            <column name="email" value="vasya@gmail.com"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="nnigmat">
+        <insert tableName="user_role">
+            <column name="user_id" value="1"></column>
+            <column name="roles" value="ADMIN,USER,MODERATOR"></column>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="2"></column>
+            <column name="roles" value="USER,MODERATOR"></column>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="3"></column>
+            <column name="roles" value="USER"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="nnigmat">
+        <dropColumn tableName="usr" columnName="active"></dropColumn>
+        <addColumn tableName="usr">
+            <column name="active" type="bool" defaultValue="true"></column>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>
