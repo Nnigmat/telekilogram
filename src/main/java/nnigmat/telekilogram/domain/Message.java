@@ -11,7 +11,7 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private User author;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
@@ -25,14 +25,6 @@ public class Message {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Room getRoom() {
@@ -50,4 +42,16 @@ public class Message {
     public void setText(String text) {
         this.text = text;
     }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+    public String getAuthorName() {
+        return this.author != null ? this.author.getUsername() : "<none>";
+    }
+
 }

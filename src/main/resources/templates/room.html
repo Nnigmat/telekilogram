@@ -7,7 +7,7 @@
 <body>
     <div style="overflow-y:scroll;">
         <div th:each="msg: ${messages}">
-            <i th:text="${msg.getUser().getUsername()}"></i>
+            <i th:text="${msg.getAuthorName()}"></i>
             <span th:text="${msg.getText()}"></span>
         </div>
     </div>
