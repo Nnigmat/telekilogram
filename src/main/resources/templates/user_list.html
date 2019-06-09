@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <meta charset="UTF-8">
+    <title>Telekilogram User List</title>
+</head>
+<body>
+    <h1>User list</h1>
+    <div th:each="usr: ${users}">
+        <i th:text="${usr.getUsername()}"></i>
+        <span th:text="${usr.getAuthorities()}"></span>
+        <form method="post" action="/user/give_ban">
+            <input type="submit" th:value="${usr.getAuthorities().contains('BAN')} ? 'Unban' : 'Ban'">
+        </form>
+        <form method="post" action="/user/give_moderator">
+            <input type="submit" th:value="${usr.getAuthorities().contains('MODERATOR')} ? 'Remove from moderators' : 'Make moderator'">
+        </form>
+        <a th:href="'/user/' + ${usr.getId()}">Edit</a>
+    </div>
+</body>
+</html>
