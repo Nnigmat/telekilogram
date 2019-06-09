@@ -42,6 +42,7 @@ public class RoomController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
     public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
         Message message = new Message(text, user.getCurrentRoom(), user);
 
