@@ -9,10 +9,12 @@
     <div th:each="usr: ${users}">
         <i th:text="${usr.getUsername()}"></i>
         <span th:text="${usr.getAuthorities()}"></span>
-        <form method="post" action="/user/give_ban">
-            <input type="submit" th:value="${usr.getAuthorities().contains('BAN')} ? 'Unban' : 'Ban'">
+        <form method="post" th:action="'/user/give_ban/' + ${usr.getId()}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <input type="submit" th:value="${usr.getRoles().contains(Role.BAN)} ? 'Unban' : 'Ban'">
         </form>
-        <form method="post" action="/user/give_moderator">
+        <form method="post" th:action="'/user/give_moderator/' + ${usr.getId()}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <input type="submit" th:value="${usr.getAuthorities().contains('MODERATOR')} ? 'Remove from moderators' : 'Make moderator'">
         </form>
         <a th:href="'/user/' + ${usr.getId()}">Edit</a>
