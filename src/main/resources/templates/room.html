@@ -9,7 +9,7 @@
         <div th:each="msg: ${messages}">
             <i th:text="${msg.getAuthorName()}"></i>
             <span th:text="${msg.getText()}"></span>
-            <form th:action="'/room/' + ${room.getId()} + '/deleteMessage/' + ${msg.getId()}" method="post"
+            <form th:action="'/deleteMessage/' + ${msg.getId()}" method="post"
                   th:if="${user.canRemove()}"  style="display:inline-block;">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <input type="submit" value="Delete">
