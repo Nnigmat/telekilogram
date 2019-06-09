@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+import static nnigmat.telekilogram.controller.CommandsController.executeCommand;
+
 @Controller
 public class MessageController {
 
@@ -40,6 +42,9 @@ public class MessageController {
     @PostMapping("/room")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
     public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
+//        if (text.startsWith("//")) {
+//            executeCommand(text);
+//        }
         Message message = new Message(text, user.getCurrentRoom(), user);
 
         messageRepo.save(message);
