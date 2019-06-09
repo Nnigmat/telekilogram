@@ -108,4 +108,10 @@ public class User implements UserDetails {
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
+
+    public boolean canRemove() {
+        if (this.getAuthorities().contains(Role.MODERATOR) || this.getAuthorities().contains(Role.ADMIN))
+            return true;
+        return false;
+    }
 }

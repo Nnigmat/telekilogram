@@ -1,22 +1,22 @@
 package nnigmat.telekilogram.controller;
 
 import nnigmat.telekilogram.domain.Message;
+import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.MessageRepo;
 import nnigmat.telekilogram.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.awt.event.MouseEvent;
 import java.security.Principal;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/room")
@@ -36,6 +36,7 @@ public class RoomController {
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
         model.addAttribute("room", roomFromDb);
+        model.addAttribute("Role", Role.class);
 
         return "room";
     }
@@ -46,6 +47,14 @@ public class RoomController {
 
         messageRepo.save(message);
 
+        return "redirect:/room";
+    }
+
+    @PostMapping("/{roomId}/deleteMessage/{messageId}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
+    public String deleteMessage(@PathVariable Long roomId, @PathVariable Long messageId) {
+        Optional<Message> messageFromDb = messageRepo.findById(messageId);
+        messageFromDb.ifPresent(message -> messageRepo.delete(message));
         return "redirect:/room";
     }
 }
