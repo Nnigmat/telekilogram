@@ -1,5 +1,8 @@
 package nnigmat.telekilogram.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CommandsController {
 
     public static String executeCommand(String command) {
