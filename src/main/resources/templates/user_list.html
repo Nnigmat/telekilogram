@@ -12,8 +12,7 @@
 <body>
     <div class="container">
         <h1>User list</h1>
-        <ul th:each="usr: ${users}" class="collection">
-            <li th:replace="fragments/user :: user_view (${usr})" class="collection-item avatar"></li>
+        <ul th:replace="fragments/user :: user_view (${users})" class="collection">
         </ul>
     </div>
     <!-- Compiled and minified JavaScript -->
