@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" >
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>TeleKilogram: User List</title>
+    <title>TeleKilogram: Room list</title>
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
 
@@ -13,8 +13,8 @@
 </head>
 <body>
     <div class="container">
-        <div th:replace="fragments/navbar :: navbar (title='User list', usr=${user})"></div>
-        <ul th:replace="fragments/user :: user_view (users=${users}, superuser=${user})" class="collection"></ul>
+        <nav th:replace="fragments/navbar :: navbar ('Room list', ${user})"></nav>
+        <ul th:replace="fragments/room :: rooms (${rooms})"></ul>
     </div>
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

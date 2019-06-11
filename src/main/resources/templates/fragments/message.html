@@ -1,7 +1,7 @@
 <ul th:fragment="messages (messages)" class="collection">
     <li th:each="msg: ${messages}" class="collection-item avatar">
         <div>
-            <i clars="title" th:text="'User: ' + ${msg.getAuthorName()} + '&emsp;' + ${msg.getFormattedTime()}"></i>
+            <i class="title" th:text="'User: ' + ${msg.getAuthorName()} + '&emsp;' + ${msg.getFormattedTime()}"></i>
             <p th:text="${msg.getText()}"></p>
             <form th:action="'/deleteMessage/' + ${msg.getId()}" method="post" th:if="${user.canRemove()}" class="secondary-content">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

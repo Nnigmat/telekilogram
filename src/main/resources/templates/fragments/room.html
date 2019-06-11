@@ -1,0 +1,5 @@
+<ul th:fragment="rooms (rooms)" class="collection">
+    <li th:each="rm: ${rooms}" class="collection-item">
+        <i class="title" th:text="${rm.getName()}"></i>
+    </li>
+</ul>

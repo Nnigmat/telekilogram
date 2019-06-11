@@ -18,4 +18,19 @@
         <addPrimaryKey tableName="user_rooms" columnNames="user_id, room_id"></addPrimaryKey>
     </changeSet>
 
+    <changeSet id="2" author="nnigmat">
+        <insert tableName="user_rooms">
+            <column name="user_id" value="1"></column>
+            <column name="room_id" value="1"></column>
+        </insert>
+        <insert tableName="user_rooms">
+            <column name="user_id" value="2"></column>
+            <column name="room_id" value="1"></column>
+        </insert>
+        <insert tableName="user_rooms">
+            <column name="user_id" value="3"></column>
+            <column name="room_id" value="1"></column>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

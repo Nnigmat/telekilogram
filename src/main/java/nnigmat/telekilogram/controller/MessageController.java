@@ -36,23 +36,27 @@ public class MessageController {
         model.addAttribute("room", roomFromDb);
         model.addAttribute("Role", Role.class);
 
-        return "room";
+        return "main";
     }
 
     @PostMapping("/room")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
     public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
-//        if (text.startsWith("//")) {
-//            executeCommand(text);
-//        }
+        // Check that message is not empty
         if (text.equals("")) {
-            return "redirect:/room";
+            return "redirect:/main";
         }
+
+        // If text starts with // then it's a command
+        if (text.startsWith("//")) {
+            executeCommand(text);
+        }
+
         Message message = new Message(text, user.getCurrentRoom(), user);
 
         messageRepo.save(message);
 
-        return "redirect:/room";
+        return "redirect:/main";
     }
 
     @PostMapping("/deleteMessage/{messageId}")
@@ -60,6 +64,6 @@ public class MessageController {
     public String deleteMessage(@PathVariable Long messageId) {
         Optional<Message> messageFromDb = messageRepo.findById(messageId);
         messageFromDb.ifPresent(message -> messageRepo.delete(message));
-        return "redirect:/room";
+        return "redirect:/main";
     }
 }
