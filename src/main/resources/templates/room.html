@@ -13,7 +13,7 @@
 </head>
 <body>
     <div class="container">
-    <div th:replace="fragments/navbar :: navbar"></div>
+    <div th:replace="fragments/navbar :: navbar (${user})"></div>
     <div style="overflow-y:scroll; max-height: 700px; word-wrap: break-word;" id="messageBody">
         <ul th:replace="fragments/message :: messages (${messages})">
         </ul>
