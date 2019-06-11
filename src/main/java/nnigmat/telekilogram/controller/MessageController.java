@@ -45,6 +45,9 @@ public class MessageController {
 //        if (text.startsWith("//")) {
 //            executeCommand(text);
 //        }
+        if (text.equals("")) {
+            return "redirect:/room";
+        }
         Message message = new Message(text, user.getCurrentRoom(), user);
 
         messageRepo.save(message);

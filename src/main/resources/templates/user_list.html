@@ -12,19 +12,9 @@
 <body>
     <div class="container">
         <h1>User list</h1>
-        <div th:each="usr: ${users}">
-            <i th:text="${usr.getUsername()}" class="col s4 m2 l2"></i>
-            <span th:text="${usr.getAuthorities()}" class="col s4 m2 l2"></span>
-            <form method="post" th:action="'/user/give_ban/' + ${usr.getId()}" class="col s2 m3 l4" style="display: inline;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <input type="submit" th:value="${usr.getRoles().contains(Role.BAN)} ? 'Unban' : 'Ban'" class="waves-effect waves-teal btn-flat">
-            </form>
-            <form method="post" th:action="'/user/give_moderator/' + ${usr.getId()}" class="col s2 m3 l4" style="display: inline;">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button type="submit" th:text="${usr.getRoles().contains(Role.MODERATOR)} ? 'Remove from moderators' : 'Make moderator'" class="waves-effect waves-teal btn-flat"></button>
-            </form>
-            <a th:href="'/user/' + ${usr.getId()}">Edit</a>
-        </div>
+        <ul th:each="usr: ${users}" class="collection">
+            <li th:replace="fragments/user :: user_view (${usr})" class="collection-item avatar"></li>
+        </ul>
     </div>
     <!-- Compiled and minified JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>

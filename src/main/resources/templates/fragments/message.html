@@ -1,0 +1,12 @@
+<ul th:fragment="messages (messages)" class="collection">
+    <li th:each="msg: ${messages}" class="collection-item avatar">
+        <div>
+            <i class="title" th:text="'User: ' + ${msg.getAuthorName()}"></i>
+            <p th:text="${msg.getText()}"></p>
+            <form th:action="'/deleteMessage/' + ${msg.getId()}" method="post" th:if="${user.canRemove()}" class="secondary-content">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="waves-effect waves-teal btn-flat"><i class="material-icons">delete</i> </button>
+            </form>
+       </div>
+    </li>
+</ul>
