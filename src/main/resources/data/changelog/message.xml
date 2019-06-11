@@ -49,5 +49,11 @@
                                  referencedTableName="room"
                                  referencedColumnNames="id"></addForeignKeyConstraint>
     </changeSet>
+    
+    <changeSet id="3" author="nnigmat">
+        <addColumn tableName="message">
+            <column defaultValueComputed="current_timestamp" name="created_time" type="timestamp"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
 
