@@ -1,18 +1,36 @@
 package nnigmat.telekilogram.controller;
 
-import java.util.HashMap;
-import java.util.Map;
+import nnigmat.telekilogram.domain.Room;
+import nnigmat.telekilogram.domain.User;
+import nnigmat.telekilogram.repos.RoomRepo;
+import nnigmat.telekilogram.repos.UserRepo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
+import org.springframework.stereotype.Controller;
 
+import java.util.regex.Pattern;
+
+@Controller
 public class CommandsController {
 
-    public static String executeCommand(String command) {
+    private static RoomRepo roomRepo;
+    private static UserRepo userRepo;
+
+    public static String executeCommand(String command, User user, RoomRepo roomRepo1, UserRepo userRepo1) {
+        roomRepo = roomRepo1;
+        userRepo = userRepo1;
+
         command = command.trim();
         String[] temp = command.split(" ");
+
+        if (command.equals("//help")) {
+            return "help";
+        }
 
         String res = "";
         switch (temp[0]) {
             case ("//room"):
-                res = roomCommands(temp);
+                res = roomCommands(command, user);
                 break;
             case ("//user"):
                 res = userCommands(temp);
@@ -24,20 +42,57 @@ public class CommandsController {
         return res;
     }
 
-    private static String roomCommands(String[] command) {
-        switch (command[1]) {
-            case ("create"):
-            case ("remove"):
+    private static String roomCommands(String command, User user) {
 
-            case ("rename"):
-
-            case ("connect"):
-
-            case ("disconnect"):
-
-            default:
+        Pattern pattern = Pattern.compile("//room rename \"[^\"]+\"");
+        if (pattern.matcher(command).matches() && (user.getCurrentRoom().getCreator() == user || user.isAdmin())) {
+            String newName = getName(command);
+            rename(newName, user);
         }
-        return "";
+
+        pattern = Pattern.compile("//room remove \"[^\"]+\"");
+        if (pattern.matcher(command).matches() && (user.getCurrentRoom().getCreator() == user || user.isAdmin())) {
+            String name = getName(command);
+            remove(name);
+        }
+
+        pattern = Pattern.compile("//room connect \"[^\"]+\"");
+        if (pattern.matcher(command).matches()) {
+            String name = getName(command);
+            connect(name, user);
+        }
+
+        pattern = Pattern.compile("//room connect \"[^\"]+\" -l \"[^\"\\s]+\"");
+        if (pattern.matcher(command).matches()) {
+            String name = getName(command);
+        }
+
+        return "redirect:/room";
+    }
+
+    private static String getName(String command) {
+        int start = command.indexOf("\"");
+        int end = command.lastIndexOf("\"");
+        return command.substring(start+1, end);
+    }
+
+    private static void connect(String name, User user) {
+        Room room = roomRepo.findByName(name);
+        if (room != null && user.hasAccess(room)) {
+            user.setCurrentRoom(room);
+        }
+    }
+
+    private static void remove(String name) {
+        Room room = roomRepo.findByName(name);
+        if (room.getId() != 1)
+            roomRepo.delete(room);
+    }
+
+    private static void rename(String newName, User user) {
+        Room room = user.getCurrentRoom();
+        room.setName(newName);
+        roomRepo.save(room);
     }
 
     private static String userCommands(String[] command) {

@@ -5,6 +5,7 @@ import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.MessageRepo;
+import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,9 @@ public class MessageController {
     @Autowired
     private MessageRepo messageRepo;
 
+    @Autowired
+    private RoomRepo roomRepo;
+
     @GetMapping("/room")
     public String listMessages(@AuthenticationPrincipal User user, Model model) {
         Room roomFromDb = user.getCurrentRoom();
@@ -44,19 +48,18 @@ public class MessageController {
     public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
         // Check that message is not empty
         if (text.equals("")) {
-            return "redirect:/main";
+            return "redirect:/room";
         }
 
         // If text starts with // then it's a command
         if (text.startsWith("//")) {
-            executeCommand(text);
+            executeCommand(text, user, roomRepo, userRepo);
+        } else {
+            Message message = new Message(text, user.getCurrentRoom(), user);
+            messageRepo.save(message);
         }
 
-        Message message = new Message(text, user.getCurrentRoom(), user);
-
-        messageRepo.save(message);
-
-        return "redirect:/main";
+        return "redirect:/room";
     }
 
     @PostMapping("/deleteMessage/{messageId}")

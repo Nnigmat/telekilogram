@@ -18,7 +18,7 @@
         <ul th:replace="fragments/message :: messages (${messages})">
         </ul>
     </div>
-    <form method="post">
+    <form method="post" th:if="${!user.isBanned()}">
         <div class="row">
             <div class="row">
                 <div class="input-field col s6">

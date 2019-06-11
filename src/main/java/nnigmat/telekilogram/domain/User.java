@@ -119,10 +119,8 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public boolean canRemove() {
-        if (this.getAuthorities().contains(Role.MODERATOR) || this.getAuthorities().contains(Role.ADMIN))
-            return true;
-        return false;
+    public boolean isAdminOrModerator() {
+        return isAdmin() || isModerator();
     }
 
     public Set<Room> getRooms() {
@@ -132,4 +130,17 @@ public class User implements UserDetails {
     public void setRooms(Set<Room> rooms) {
         this.rooms = rooms;
     }
+
+    public boolean isAdmin() { return this.getAuthorities().contains(Role.ADMIN); }
+
+    public boolean isModerator() { return this.getAuthorities().contains(Role.MODERATOR); }
+
+    public boolean hasAccess(Room room) { return this.getRooms().contains(room); }
+
+    public boolean isBanned() { return this.getAuthorities().contains(Role.BAN); }
+
+    public boolean equals(User user) {
+        return this.getId().equals(user.getId());
+    }
+
 }

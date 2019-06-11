@@ -36,31 +36,33 @@ public class UserController {
     }
 
     @PostMapping("/give_ban/{user}")
-    public String ban(@PathVariable User user){
-        Set<Role> ban = new HashSet<Role>();
-        if (user.getAuthorities().contains(Role.BAN)) {
-            ban.add(Role.USER);
-        } else {
-            ban.add(Role.BAN);
+    public String ban(@AuthenticationPrincipal User author, @PathVariable User user){
+        if (!author.equals(user)) {
+            Set<Role> ban = new HashSet<Role>();
+            if (user.getAuthorities().contains(Role.BAN)) {
+                ban.add(Role.USER);
+            } else {
+                ban.add(Role.BAN);
+            }
+            user.setRoles(ban);
+            userRepo.save(user);
         }
-        user.setRoles(ban);
-        userRepo.save(user);
-
         return "redirect:/user";
     }
 
     @PostMapping("/give_moderator/{user}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public String moderator(@PathVariable User user){
-        Set<Role> ban = new HashSet<Role>();
-        if (user.getAuthorities().contains(Role.MODERATOR)) {
-            ban.add(Role.USER);
-        } else {
-            ban.add(Role.MODERATOR);
+    public String moderator(@AuthenticationPrincipal User author, @PathVariable User user){
+        if (!author.equals(user)) {
+            Set<Role> ban = new HashSet<Role>();
+            if (user.getAuthorities().contains(Role.MODERATOR)) {
+                ban.add(Role.USER);
+            } else {
+                ban.add(Role.MODERATOR);
+            }
+            user.setRoles(ban);
+            userRepo.save(user);
         }
-        user.setRoles(ban);
-        userRepo.save(user);
-
         return "redirect:/user";
     }
 }
