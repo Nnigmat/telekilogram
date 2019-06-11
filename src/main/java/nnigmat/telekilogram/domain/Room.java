@@ -1,6 +1,8 @@
 package nnigmat.telekilogram.domain;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "room")
@@ -14,6 +16,14 @@ public class Room {
     @ManyToOne
     @JoinColumn(name = "creator_id")
     private User creator;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_rooms",
+            joinColumns = { @JoinColumn(name = "room_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
+    private Set<User> members = new HashSet<>();
 
     public Long getId() {
         return id;
@@ -37,5 +47,13 @@ public class Room {
 
     public void setCreator(User creator) {
         this.creator = creator;
+    }
+
+    public Set<User> getMembers() {
+        return members;
+    }
+
+    public void setMembers(Set<User> members) {
+        this.members = members;
     }
 }

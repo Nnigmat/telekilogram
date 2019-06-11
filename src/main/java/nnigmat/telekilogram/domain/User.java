@@ -5,6 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -27,6 +28,15 @@ public class User implements UserDetails {
     @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_rooms",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "room_id") }
+    )
+    private Set<Room> rooms = new HashSet<>();
+
 
     public Long getId() {
         return id;
@@ -107,5 +117,19 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public boolean canRemove() {
+        if (this.getAuthorities().contains(Role.MODERATOR) || this.getAuthorities().contains(Role.ADMIN))
+            return true;
+        return false;
+    }
+
+    public Set<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(Set<Room> rooms) {
+        this.rooms = rooms;
     }
 }

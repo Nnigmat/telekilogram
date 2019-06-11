@@ -40,4 +40,20 @@
             <column name="text" value="How are you doing?"></column>
         </insert>
     </changeSet>
+    
+    <changeSet id="2" author="nnigmat">
+        <addForeignKeyConstraint baseTableName="message" baseColumnNames="user_id" constraintName="fk_user_account"
+                                 referencedTableName="usr"
+                                 referencedColumnNames="id"></addForeignKeyConstraint>
+        <addForeignKeyConstraint baseTableName="message" baseColumnNames="room_id" constraintName="fk_room_account"
+                                 referencedTableName="room"
+                                 referencedColumnNames="id"></addForeignKeyConstraint>
+    </changeSet>
+    
+    <changeSet id="3" author="nnigmat">
+        <addColumn tableName="message">
+            <column defaultValueComputed="current_timestamp" name="created_time" type="timestamp"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
+

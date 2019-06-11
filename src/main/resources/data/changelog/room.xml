@@ -25,4 +25,10 @@
             <column name="creator_id" value="1"></column>
         </insert>
     </changeSet>
+    
+    <changeSet id="3" author="nnigmat">
+        <addForeignKeyConstraint baseTableName="room" baseColumnNames="creator_id" constraintName="fk_creator_account"
+                                 referencedTableName="usr"
+                                 referencedColumnNames="id"></addForeignKeyConstraint>
+    </changeSet>
 </databaseChangeLog>

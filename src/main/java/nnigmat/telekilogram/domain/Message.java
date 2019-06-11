@@ -1,6 +1,10 @@
 package nnigmat.telekilogram.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 @Table(name = "message")
@@ -17,6 +21,11 @@ public class Message {
     @JoinColumn(name = "room_id")
     private Room room;
     private String text;
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_time")
+    private Date createdTime;
 
     public Message() {}
 
@@ -61,4 +70,17 @@ public class Message {
         return this.author != null ? this.author.getUsername() : "<none>";
     }
 
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+    public String getFormattedTime() {
+        SimpleDateFormat df = new SimpleDateFormat("dd MMM yy HH:mm");
+
+        return df.format(this.createdTime);
+    }
 }

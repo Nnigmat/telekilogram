@@ -1,51 +1,26 @@
 package nnigmat.telekilogram.controller;
 
-import nnigmat.telekilogram.domain.Message;
+import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
-import nnigmat.telekilogram.repos.MessageRepo;
-import nnigmat.telekilogram.repos.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.awt.event.MouseEvent;
-import java.security.Principal;
 
 @Controller
 @RequestMapping("/room")
 public class RoomController {
 
-    @Autowired
-    private UserRepo userRepo;
+    @GetMapping("/list")
+    public String listRoom(@AuthenticationPrincipal User user, Model model) {
+        Iterable<Room> rooms = user.getRooms();
 
-    @Autowired
-    private MessageRepo messageRepo;
-
-    @GetMapping
-    public String listMessages(@AuthenticationPrincipal User user, Model model) {
-        Room roomFromDb = user.getCurrentRoom();
-
-        Iterable<Message> messages = messageRepo.findByRoom(roomFromDb);
-        model.addAttribute("messages", messages);
         model.addAttribute("user", user);
-        model.addAttribute("room", roomFromDb);
+        model.addAttribute("rooms", rooms);
+        model.addAttribute("Role", Role.class);
 
-        return "room";
-    }
-
-    @PostMapping
-    public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
-        Message message = new Message(text, user.getCurrentRoom(), user);
-
-        messageRepo.save(message);
-
-        return "redirect:/room";
+        return "room_list";
     }
 }
