@@ -5,6 +5,7 @@ import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,10 @@ public class UserController {
     private UserRepo userRepo;
 
     @GetMapping
-    public String listUser(Model model) {
+    public String listUser(@AuthenticationPrincipal User user, Model model) {
         Iterable<User> users = userRepo.findAll();
 
+        model.addAttribute("user", user);
         model.addAttribute("users", users);
         model.addAttribute("Role", Role.class);
 

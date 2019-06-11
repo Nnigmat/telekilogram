@@ -1,7 +1,7 @@
-<div th:fragment="navbar (usr)" >
+<div th:fragment="navbar (title, usr)" >
     <nav style="margin-bottom: 10px !important;">
         <div class="nav-wrapper">
-            <a href="/room" class="brand-logo">TeleKilogram: <span th:text="${room.getName()}"></span> <i class="material-icons">keyboard</i>&nbsp;</a>
+            <a href="/room" class="brand-logo"><span th:text="${title}"></span> <i class="material-icons">keyboard</i>&nbsp;</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li th:if="${usr.getAuthorities().contains(Role.ADMIN) || usr.getAuthorities().contains(Role.MODERATOR)}">
                     <a href="/user">Users</a>

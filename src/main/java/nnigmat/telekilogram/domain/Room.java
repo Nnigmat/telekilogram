@@ -17,7 +17,7 @@ public class Room {
     @JoinColumn(name = "creator_id")
     private User creator;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_rooms",
             joinColumns = { @JoinColumn(name = "room_id") },
