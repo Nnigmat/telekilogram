@@ -25,6 +25,22 @@ public class Room {
     )
     private Set<User> members = new HashSet<>();
 
+    private boolean closed;
+
+    public Room() {}
+
+    public Room(String name, User creator, boolean closed) {
+        this.name = name;
+        this.creator = creator;
+        this.members.add(creator);
+        this.closed = closed;
+    }
+
+    public void addMemeber(User user) {
+        this.members.add(user);
+        user.getRooms().add(this);
+    }
+
     public Long getId() {
         return id;
     }
@@ -59,5 +75,13 @@ public class Room {
 
     public boolean equals(Room room) {
         return this.getId().equals(room.getId());
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
     }
 }

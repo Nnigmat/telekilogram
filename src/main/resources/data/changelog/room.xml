@@ -38,4 +38,10 @@
             <column name="creator_id" value="1"></column>
         </insert>
     </changeSet>
+
+    <changeSet id="5" author="nnigmat">
+        <addColumn tableName="room">
+            <column name="closed" type="boolean" defaultValue="false"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

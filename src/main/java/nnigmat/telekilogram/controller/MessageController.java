@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-import static nnigmat.telekilogram.controller.CommandsController.executeCommand;
-
 @Controller
 public class MessageController {
 
@@ -47,7 +45,8 @@ public class MessageController {
         Checker checker = new Checker(text);
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
-            System.out.println(commandName);
+            CommandExecutor executor = new CommandExecutor(text, commandName, user, roomRepo, userRepo);
+            executor.execute();
         } else if (!checker.isEmpty()) {
             Message message = new Message(text, user.getCurrentRoom(), user);
             messageRepo.save(message);

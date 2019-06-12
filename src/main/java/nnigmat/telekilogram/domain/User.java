@@ -20,7 +20,7 @@ public class User implements UserDetails {
     private String email;
     private boolean active;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "current_room_id")
     private Room currentRoom;
 
@@ -37,6 +37,10 @@ public class User implements UserDetails {
     )
     private Set<Room> rooms = new HashSet<>();
 
+    public void addRoom(Room room) {
+        this.rooms.add(room);
+        room.getMembers().add(this);
+    }
 
     public Long getId() {
         return id;
