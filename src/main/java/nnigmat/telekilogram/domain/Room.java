@@ -56,4 +56,8 @@ public class Room {
     public void setMembers(Set<User> members) {
         this.members = members;
     }
+
+    public boolean equals(Room room) {
+        return this.getId().equals(room.getId());
+    }
 }
