@@ -4,8 +4,6 @@ import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 
 import java.util.regex.Pattern;
@@ -45,15 +43,15 @@ public class CommandsController {
     private static String roomCommands(String command, User user) {
 
         Pattern pattern = Pattern.compile("//room rename \"[^\"]+\"");
-        if (pattern.matcher(command).matches() && (user.getCurrentRoom().getCreator() == user || user.isAdmin())) {
+        if (pattern.matcher(command).matches() && (user.getCurrentRoom().getCreator().equals(user) || user.isAdmin())) {
             String newName = getName(command);
             rename(newName, user);
         }
 
         pattern = Pattern.compile("//room remove \"[^\"]+\"");
-        if (pattern.matcher(command).matches() && (user.getCurrentRoom().getCreator() == user || user.isAdmin())) {
+        if (pattern.matcher(command).matches() && (user.getCurrentRoom().getCreator().equals(user) || user.isAdmin())) {
             String name = getName(command);
-            remove(name);
+            remove(name, user);
         }
 
         pattern = Pattern.compile("//room connect \"[^\"]+\"");
@@ -83,9 +81,9 @@ public class CommandsController {
         }
     }
 
-    private static void remove(String name) {
+    private static void remove(String name, User user) {
         Room room = roomRepo.findByName(name);
-        if (room.getId() != 1)
+        if (room != null && room.getId() != 1)
             roomRepo.delete(room);
     }
 

@@ -23,10 +23,8 @@ public class MessageController {
 
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private MessageRepo messageRepo;
-
     @Autowired
     private RoomRepo roomRepo;
 
@@ -46,19 +44,13 @@ public class MessageController {
     @PostMapping("/room")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
     public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
-        // Check that message is not empty
-        if (text.equals("")) {
-            return "redirect:/room";
-        }
-
-        // If text starts with // then it's a command
-        if (text.startsWith("//")) {
-            executeCommand(text, user, roomRepo, userRepo);
-        } else {
+        Checker checker = new Checker(text);
+        if (checker.isCommand()) {
+            String commandName = checker.checkCommand();
+        } else if (!checker.isEmpty()) {
             Message message = new Message(text, user.getCurrentRoom(), user);
             messageRepo.save(message);
         }
-
         return "redirect:/room";
     }
 
@@ -67,6 +59,6 @@ public class MessageController {
     public String deleteMessage(@PathVariable Long messageId) {
         Optional<Message> messageFromDb = messageRepo.findById(messageId);
         messageFromDb.ifPresent(message -> messageRepo.delete(message));
-        return "redirect:/main";
+        return "redirect:/room";
     }
 }
