@@ -23,7 +23,7 @@ public class Checker {
         put("room_user_with_time_disconnect", "//room disconnect \"[^\"]+\" -l \"[^\"]+\" -m \\d+");
 
         put("user_rename", "//user rename \"[^\"]+\" \"[^\"]+\"");
-        put("user_ban", "//user ban \"[^\"]+\" -l \"[^\"]+\" -m  \\d+");
+        put("user_ban", "//user ban \"[^\"]+\" -l \"[^\"]+\" -m \\d+");
         put("user_make_moderator", "//user moderator -n \"[^\"]+\"");
         put("user_unmake_moderator", "//user moderator -d \"[^\"]+\"");
     }};

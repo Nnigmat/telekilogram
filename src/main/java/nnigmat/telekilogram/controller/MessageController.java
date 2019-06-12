@@ -47,6 +47,7 @@ public class MessageController {
         Checker checker = new Checker(text);
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
+            System.out.println(commandName);
         } else if (!checker.isEmpty()) {
             Message message = new Message(text, user.getCurrentRoom(), user);
             messageRepo.save(message);
