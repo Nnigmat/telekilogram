@@ -25,10 +25,11 @@ public class CommandExecutor {
 
     public void execute() {
         switch (this.commandName) {
+            case (""): break;
             case ("help"): break;
-            case ("room_public_create"): this.room_public_create();
+            case ("room_public_create"): this.room_create(false);
                                         break;
-            case ("room_private_create"): this.room_private_create();
+            case ("room_private_create"): this.room_create(true);
                                         break;
             case ("room_remove"): this.room_remove();
                                         break;
@@ -63,18 +64,18 @@ public class CommandExecutor {
         return Pair.of((String)command.substring(start+1, end),(Integer)end+1);
     }
 
-    private void room_public_create() {
+    private void room_create(boolean closed) {
+        // Take the name of the new room
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
+
+        // Find room. If it exists we can't create the new room
         Room room = roomRepo.findByName(roomName);
         if (room == null && !this.user.isBanned()) {
-            Room newRoom = new Room(roomName, this.user, false);
+            Room newRoom = new Room(roomName, this.user, closed);
             newRoom.addMemeber(user);
             roomRepo.save(newRoom);
         }
-    }
-
-    private void room_private_create() {
     }
 
     private void room_remove() {
