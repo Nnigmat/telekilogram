@@ -147,4 +147,9 @@ public class User implements UserDetails {
         return this.getId().equals(user.getId());
     }
 
+    public void removeRoom(Room room) {
+        this.rooms.remove(room);
+        room.getMembers().remove(this);
+    }
+
 }

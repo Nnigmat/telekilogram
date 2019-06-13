@@ -36,9 +36,14 @@ public class Room {
         this.closed = closed;
     }
 
-    public void addMemeber(User user) {
+    public void addMember(User user) {
         this.members.add(user);
         user.getRooms().add(this);
+    }
+
+    public void removeMember(User user) {
+        this.members.remove(user);
+        user.getRooms().remove(this);
     }
 
     public Long getId() {
@@ -83,5 +88,9 @@ public class Room {
 
     public void setClosed(boolean closed) {
         this.closed = closed;
+    }
+
+    public boolean isCreator(User user) {
+        return this.creator.equals(user);
     }
 }

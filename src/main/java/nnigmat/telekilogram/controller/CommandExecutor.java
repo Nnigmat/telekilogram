@@ -73,15 +73,33 @@ public class CommandExecutor {
         Room room = roomRepo.findByName(roomName);
         if (room == null && !this.user.isBanned()) {
             Room newRoom = new Room(roomName, this.user, closed);
-            newRoom.addMemeber(user);
+            newRoom.addMember(user);
             roomRepo.save(newRoom);
         }
     }
 
     private void room_remove() {
+        Pair<String, Integer> pair = parse(0);
+        String roomName = pair.getFirst();
+
+        Room room = roomRepo.findByName(roomName);
+        if (room != null && room.getId() != 1 && (user.isAdmin() || room.isCreator(user))) {
+            for (User u: room.getMembers()) {
+                room.removeMember(u);
+            }
+            roomRepo.delete(room);
+        }
     }
 
     private void room_rename() {
+        Pair<String, Integer> pair = parse(0);
+        String newRoomName = pair.getFirst();
+
+        Room room = user.getCurrentRoom();
+        if (room != null && (user.isAdmin() || room.isCreator(user))) {
+            room.setName(newRoomName);
+            roomRepo.save(room);
+        }
     }
 
     private void room_self_connect() {
