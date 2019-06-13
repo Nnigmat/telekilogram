@@ -148,8 +148,7 @@ public class User implements UserDetails {
     }
 
     public void removeRoom(Room room) {
-        this.rooms.remove(room);
-        room.getMembers().remove(this);
+        rooms.remove(room);
     }
 
 }

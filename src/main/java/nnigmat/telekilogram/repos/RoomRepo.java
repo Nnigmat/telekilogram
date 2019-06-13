@@ -3,6 +3,8 @@ package nnigmat.telekilogram.repos;
 import nnigmat.telekilogram.domain.Room;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface RoomRepo extends JpaRepository<Room, Long> {
-    Room findByName(String name);
+    List<Room> findByName(String name);
 }

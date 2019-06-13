@@ -2,6 +2,7 @@ package nnigmat.telekilogram.domain;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 @Entity
@@ -37,13 +38,11 @@ public class Room {
     }
 
     public void addMember(User user) {
-        this.members.add(user);
-        user.getRooms().add(this);
+        members.add(user);
     }
 
     public void removeMember(User user) {
-        this.members.remove(user);
-        user.getRooms().remove(this);
+        members.remove(user);
     }
 
     public Long getId() {
@@ -91,6 +90,16 @@ public class Room {
     }
 
     public boolean isCreator(User user) {
-        return this.creator.equals(user);
+        return creator.equals(user);
+    }
+
+    public boolean hasMember(User user) {
+        Iterator<User> it = members.iterator();
+        while (it.hasNext()) {
+            if (it.next().equals(user)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -32,12 +32,7 @@ public class RoomController {
 
     @PostMapping("/connect/{room}")
     public String connect(@AuthenticationPrincipal User user, @PathVariable Room room) {
-        Iterator<User> it = room.getMembers().iterator();
-        while (it.hasNext()) {
-            if (it.next().equals(user)) {
-                user.setCurrentRoom(room);
-            }
-        }
+        if (room.hasMember(user)) user.setCurrentRoom(room);
         userRepo.save(user);
         return "redirect:/room";
     }

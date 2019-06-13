@@ -37,9 +37,9 @@ public class UserController {
 
     @PostMapping("/give_ban/{user}")
     public String ban(@AuthenticationPrincipal User author, @PathVariable User user){
-        if (!author.equals(user)) {
+        if (!author.equals(user) && !user.isAdmin()) {
             Set<Role> ban = new HashSet<Role>();
-            if (user.getAuthorities().contains(Role.BAN)) {
+            if (user.isBanned()) {
                 ban.add(Role.USER);
             } else {
                 ban.add(Role.BAN);
@@ -53,9 +53,9 @@ public class UserController {
     @PostMapping("/give_moderator/{user}")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String moderator(@AuthenticationPrincipal User author, @PathVariable User user){
-        if (!author.equals(user)) {
+        if (!author.equals(user) && !user.isAdmin()) {
             Set<Role> ban = new HashSet<Role>();
-            if (user.getAuthorities().contains(Role.MODERATOR)) {
+            if (user.isModerator()) {
                 ban.add(Role.USER);
             } else {
                 ban.add(Role.MODERATOR);
