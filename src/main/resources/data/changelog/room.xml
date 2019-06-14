@@ -31,4 +31,17 @@
                                  referencedTableName="usr"
                                  referencedColumnNames="id"></addForeignKeyConstraint>
     </changeSet>
+
+    <changeSet id="4" author="nnigmat">
+        <insert tableName="room">
+            <column name="name" value="Test Chat"></column>
+            <column name="creator_id" value="1"></column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="nnigmat">
+        <addColumn tableName="room">
+            <column name="closed" type="boolean" defaultValue="false"></column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

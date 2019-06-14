@@ -33,4 +33,11 @@
         </insert>
     </changeSet>
 
+    <changeSet id="3" author="nnigmat">
+        <insert tableName="user_rooms">
+            <column name="user_id" value="1"></column>
+            <column name="room_id" value="2"></column>
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>

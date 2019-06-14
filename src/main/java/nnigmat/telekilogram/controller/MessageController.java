@@ -5,6 +5,7 @@ import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.MessageRepo;
+import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -15,16 +16,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-import static nnigmat.telekilogram.controller.CommandsController.executeCommand;
-
 @Controller
 public class MessageController {
 
     @Autowired
     private UserRepo userRepo;
-
     @Autowired
     private MessageRepo messageRepo;
+    @Autowired
+    private RoomRepo roomRepo;
 
     @GetMapping("/room")
     public String listMessages(@AuthenticationPrincipal User user, Model model) {
@@ -42,21 +42,16 @@ public class MessageController {
     @PostMapping("/room")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
     public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
-        // Check that message is not empty
-        if (text.equals("")) {
-            return "redirect:/main";
+        Checker checker = new Checker(text);
+        if (checker.isCommand()) {
+            String commandName = checker.checkCommand();
+            CommandExecutor executor = new CommandExecutor(text, commandName, user, roomRepo, userRepo);
+            executor.execute();
+        } else if (!checker.isEmpty()) {
+            Message message = new Message(text, user.getCurrentRoom(), user);
+            messageRepo.save(message);
         }
-
-        // If text starts with // then it's a command
-        if (text.startsWith("//")) {
-            executeCommand(text);
-        }
-
-        Message message = new Message(text, user.getCurrentRoom(), user);
-
-        messageRepo.save(message);
-
-        return "redirect:/main";
+        return "redirect:/room";
     }
 
     @PostMapping("/deleteMessage/{messageId}")
@@ -64,6 +59,6 @@ public class MessageController {
     public String deleteMessage(@PathVariable Long messageId) {
         Optional<Message> messageFromDb = messageRepo.findById(messageId);
         messageFromDb.ifPresent(message -> messageRepo.delete(message));
-        return "redirect:/main";
+        return "redirect:/room";
     }
 }
