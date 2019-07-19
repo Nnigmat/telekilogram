@@ -7,6 +7,9 @@ import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.MessageRepo;
 import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
+import nnigmat.telekilogram.service.MessageService;
+import nnigmat.telekilogram.service.RoomService;
+import nnigmat.telekilogram.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,17 +23,17 @@ import java.util.Optional;
 public class MessageController {
 
     @Autowired
-    private UserRepo userRepo;
+    private RoomService roomService;
     @Autowired
-    private MessageRepo messageRepo;
+    private UserService userService;
     @Autowired
-    private RoomRepo roomRepo;
+    private MessageService messageService;
 
     @GetMapping("/room")
     public String listMessages(@AuthenticationPrincipal User user, Model model) {
-        Room roomFromDb = user.getCurrentRoom();
+        Room roomFromDb = userService.getUserCurrentRoom(user);
 
-        Iterable<Message> messages = messageRepo.findByRoom(roomFromDb);
+        Iterable<Message> messages = messageService.findMessagesByRoom(roomFromDb);
         model.addAttribute("members", roomFromDb.getMembers());
         model.addAttribute("moderators", roomFromDb.getModerators());
         model.addAttribute("admins", roomFromDb.getAdmins());
@@ -48,11 +51,11 @@ public class MessageController {
         Checker checker = new Checker(text);
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
-            CommandExecutor executor = new CommandExecutor(text, commandName, user, roomRepo, userRepo);
+            CommandExecutor executor = new CommandExecutor(text, commandName, user, roomService, userService);
             executor.execute();
         } else if (!checker.isEmpty()) {
             Message message = new Message(text, user.getCurrentRoom(), user);
-            messageRepo.save(message);
+            messageService.save(message);
         }
         return "redirect:/room";
     }
@@ -60,8 +63,7 @@ public class MessageController {
     @PostMapping("/deleteMessage/{messageId}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
     public String deleteMessage(@PathVariable Long messageId) {
-        Optional<Message> messageFromDb = messageRepo.findById(messageId);
-        messageFromDb.ifPresent(message -> messageRepo.delete(message));
+        messageService.deleteById(messageId);
         return "redirect:/room";
     }
 }

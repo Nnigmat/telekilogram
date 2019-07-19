@@ -5,7 +5,10 @@ import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
+import nnigmat.telekilogram.service.RoomService;
+import nnigmat.telekilogram.service.UserService;
 import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
 import java.util.List;
@@ -17,48 +20,48 @@ public class CommandExecutor {
     private String command;
     private String commandName;
     private User user;
-    private RoomRepo roomRepo;
-    private UserRepo userRepo;
+    private RoomService roomService;
+    private UserService userService;
 
-    public CommandExecutor(String command, String commandName, User user, RoomRepo roomRepo, UserRepo userRepo) {
+    public CommandExecutor(String command, String commandName, User user, RoomService roomService, UserService userService) {
         this.command = command;
         this.commandName = commandName;
         this.user = user;
-        this.roomRepo = roomRepo;
-        this.userRepo = userRepo;
+        this.roomService = roomService;
+        this.userService = userService;
     }
 
     public void execute() {
         switch (this.commandName) {
             case (""): break;
             case ("help"): break;
-            case ("room_public_create"): this.room_create(false);
+            case ("room_public_create"): this.roomCreate(false);
                                         break;
-            case ("room_private_create"): this.room_create(true);
+            case ("room_private_create"): this.roomCreate(true);
                                         break;
-            case ("room_remove"): this.room_remove();
+            case ("room_remove"): this.roomRemove();
                                         break;
-            case ("room_rename"): this.room_rename();
+            case ("room_rename"): this.roomRename();
                                         break;
-            case ("room_self_connect"): this.room_self_connect();
+            case ("room_self_connect"): this.roomSelfConnect();
                                         break;
-            case ("room_user_connect"): this.room_user_connect();
+            case ("room_user_connect"): this.roomUserConnect();
                                         break;
-            case ("room_disconnect"): this.room_disconnect();
+            case ("room_disconnect"): this.roomDisconnect();
                                         break;
-            case ("room_specified_disconnect"): this.room_specified_disconnect();
+            case ("room_specified_disconnect"): this.roomSpecifiedDisconnect();
                                         break;
-            case ("room_user_disconnect"): this.room_user_disconnect();
+            case ("room_user_disconnect"): this.roomUserDisconnect();
                                         break;
-            case ("room_user_with_time_disconnect"): this.room_user_with_time_disconnect();
+            case ("room_user_with_time_disconnect"): this.roomUserWithTimeDisconnect();
                                         break;
-            case ("user_rename"): this.user_rename();
+            case ("user_rename"): this.userRename();
                                         break;
-            case ("user_ban"): this.user_ban();
+            case ("user_ban"): this.userBan();
                                         break;
-            case ("user_make_moderator"): this.user_moderator(true);
+            case ("user_make_moderator"): this.userModerator(true);
                                         break;
-            case ("user_unmake_moderator"): this.user_moderator(false);
+            case ("user_unmake_moderator"): this.userModerator(false);
                                         break;
         }
     }
@@ -69,165 +72,165 @@ public class CommandExecutor {
         return Pair.of((String)command.substring(start+1, end),(Integer)end+1);
     }
 
-    private void room_create(boolean closed) {
+    private void roomCreate(boolean closed) {
         // Take the name of the new room
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
         // Find room. If it exists we can't create the new room
-        List<Room> rooms = roomRepo.findByName(roomName);
+        List<Room> rooms = roomService.findByName(roomName);
         if (rooms.isEmpty() && !this.user.isBanned()) {
             Room newRoom = new Room(roomName, this.user, closed);
             newRoom.addMember(user);
-            roomRepo.save(newRoom);
+            roomService.save(newRoom);
         }
     }
 
-    private void room_remove() {
+    private void roomRemove() {
         // Doesn't work properly
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
-        List<Room> rooms = roomRepo.findByName(roomName);
+        List<Room> rooms = roomService.findByName(roomName);
         for (Room room : rooms) {
             if (room != null && room.getId() != 1 && (user.isAdmin() || room.isCreator(user))) {
                 for (User u : room.getMembers()) {
                     room.removeMember(u);
                 }
-                roomRepo.delete(room);
+                roomService.delete(room);
             }
         }
     }
 
-    private void room_rename() {
+    private void roomRename() {
         Pair<String, Integer> pair = parse(0);
         String newRoomName = pair.getFirst();
 
         Room room = user.getCurrentRoom();
         if (room != null && (user.isAdmin() || room.isCreator(user))) {
             room.setName(newRoomName);
-            userRepo.save(user);
-            roomRepo.save(room);
+            userService.save(user);
+            roomService.save(room);
         }
     }
 
-    private void room_self_connect() {
+    private void roomSelfConnect() {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
-        List<Room> rooms = roomRepo.findByName(roomName);
+        List<Room> rooms = roomService.findByName(roomName);
         for (Room room : rooms) {
             if (room.hasMember(user)) {
                 user.setCurrentRoom(room);
-                userRepo.save(user);
+                userService.save(user);
                 break;
             }
         }
     }
 
-    private void room_user_connect() {
+    private void roomUserConnect() {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
         Pair<String, Integer> pair1= parse(pair.getSecond());
         String userName = pair1.getFirst();
 
-        User usr = userRepo.findByUsername(userName);
-        List<Room> rooms = roomRepo.findByName(roomName);
+        User usr = userService.findByUsername(userName);
+        List<Room> rooms = roomService.findByName(roomName);
         for (Room room : rooms) {
             if (room.isCreator(user) || user.isAdmin() || user.isModerator()) {
                 room.addMember(usr);
-                userRepo.save(usr);
-                roomRepo.save(room);
+                userService.save(usr);
+                roomService.save(room);
                 break;
             }
         }
     }
 
-    private void room_disconnect() {
+    private void roomDisconnect() {
         Room room = user.getCurrentRoom();
         room.removeMember(user);
         user.removeRoom(room);
-        Optional<Room> startRoom = roomRepo.findById((long) 1);
+        Optional<Room> startRoom = roomService.findById((long) 1);
         startRoom.ifPresent(value -> user.setCurrentRoom(value));
 
         if (room.getMembers().size() == 0) {
-            roomRepo.delete(room);
+            roomService.delete(room);
         }
 
-        roomRepo.save(room);
-        userRepo.save(user);
+        roomService.save(room);
+        userService.save(user);
     }
 
-    private void room_specified_disconnect() {
+    private void roomSpecifiedDisconnect() {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
-        List<Room> rooms = roomRepo.findByName(roomName);
+        List<Room> rooms = roomService.findByName(roomName);
         for (Room room : rooms) {
             if (room.hasMember(user)) {
                 if (user.getCurrentRoom().equals(room)) {
-                    Optional<Room> startRoom = roomRepo.findById((long) 1);
+                    Optional<Room> startRoom = roomService.findById((long) 1);
                     startRoom.ifPresent(value -> user.setCurrentRoom(value));
                 }
                 room.removeMember(user);
-                roomRepo.save(room);
-                userRepo.save(user);
+                roomService.save(room);
+                userService.save(user);
             }
         }
     }
 
-    private void room_user_disconnect() {
+    private void roomUserDisconnect() {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
         Pair<String, Integer> pair1= parse(pair.getSecond());
         String userName = pair1.getFirst();
 
-        List<Room> rooms = roomRepo.findByName(roomName);
-        User usr = userRepo.findByUsername(userName);
+        List<Room> rooms = roomService.findByName(roomName);
+        User usr = userService.findByUsername(userName);
         for (Room room : rooms) {
             if (room.hasMember(usr) && (user.isModerator() || user.isAdmin() || room.isCreator(user))) {
                 room.removeMember(usr);
-                roomRepo.save(room);
-                userRepo.save(usr);
+                roomService.save(room);
+                userService.save(usr);
             }
         }
     }
 
-    private void room_user_with_time_disconnect() {
+    private void roomUserWithTimeDisconnect() {
     }
 
-    private void user_rename() {
+    private void userRename() {
         Pair<String, Integer> pair = parse(0);
         String userName = pair.getFirst();
 
         Pair<String, Integer> pair1= parse(pair.getSecond());
         String newUserName = pair1.getFirst();
 
-        User usr = userRepo.findByUsername(userName);
-        User otherUsr = userRepo.findByUsername(newUserName);
+        User usr = userService.findByUsername(userName);
+        User otherUsr = userService.findByUsername(newUserName);
         if (usr != null && otherUsr == null) {
             usr.setUsername(newUserName);
-            userRepo.save(usr);
+            userService.save(usr);
         }
     }
 
-    private void user_ban() {
+    private void userBan() {
     }
 
-    private void user_moderator(boolean make) {
+    private void userModerator(boolean make) {
         Pair<String, Integer> pair = parse(0);
         String userName = pair.getFirst();
 
-        User usr = userRepo.findByUsername(userName);
+        User usr = userService.findByUsername(userName);
         if (usr != null && user.isAdmin()) {
             if (make) {
                 usr.getRoles().add(Role.MODERATOR);
             } else {
                 usr.getRoles().add(Role.USER);
             }
-            userRepo.save(usr);
+            userService.save(usr);
         }
     }
 
