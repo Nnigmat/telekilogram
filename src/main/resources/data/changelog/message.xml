@@ -23,20 +23,23 @@
         </createTable>
 
         <insert tableName="message">
-            <column name="user_id" value="1"></column>
-            <column name="room_id" value="1"></column>
+            <column name="id" value="0"></column>
+            <column name="user_id" value="0"></column>
+            <column name="room_id" value="0"></column>
             <column name="text" value="Good day guys!"></column>
         </insert>
 
         <insert tableName="message">
-            <column name="user_id" value="2"></column>
-            <column name="room_id" value="1"></column>
+            <column name="id" value="-1"></column>
+            <column name="user_id" value="-1"></column>
+            <column name="room_id" value="0"></column>
             <column name="text" value="Hi!"></column>
         </insert>
 
         <insert tableName="message">
-            <column name="user_id" value="3"></column>
-            <column name="room_id" value="1"></column>
+            <column name="id" value="-2"></column>
+            <column name="user_id" value="-2"></column>
+            <column name="room_id" value="0"></column>
             <column name="text" value="How are you doing?"></column>
         </insert>
     </changeSet>

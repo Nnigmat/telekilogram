@@ -21,8 +21,9 @@
 
     <changeSet id="2" author="nnigmat">
         <insert tableName="room">
+            <column name="id" value="0"></column>
             <column name="name" value="Welcome Chat!"></column>
-            <column name="creator_id" value="1"></column>
+            <column name="creator_id" value="0"></column>
         </insert>
     </changeSet>
     
@@ -34,8 +35,9 @@
 
     <changeSet id="4" author="nnigmat">
         <insert tableName="room">
+            <column name="id" value="-1"></column>
             <column name="name" value="Test Chat"></column>
-            <column name="creator_id" value="1"></column>
+            <column name="creator_id" value="0"></column>
         </insert>
     </changeSet>
 

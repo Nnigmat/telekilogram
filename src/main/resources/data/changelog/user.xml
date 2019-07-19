@@ -38,16 +38,19 @@
 
     <changeSet id="3" author="nnigmat">
         <insert tableName="usr">
+            <column name="id" value="0"></column>
             <column name="username" value="admin"></column>
             <column name="password" value="admin"></column>
             <column name="email" value="admin@gmail.com"></column>
         </insert>
         <insert tableName="usr">
+            <column name="id" value="-1"></column>
             <column name="username" value="nikita"></column>
             <column name="password" value="nikita"></column>
             <column name="email" value="nikita@gmail.com"></column>
         </insert>
         <insert tableName="usr">
+            <column name="id" value="-2"></column>
             <column name="username" value="vasya"></column>
             <column name="password" value="vasya"></column>
             <column name="email" value="vasya@gmail.com"></column>
@@ -56,15 +59,15 @@
 
     <changeSet id="4" author="nnigmat">
         <insert tableName="user_role">
-            <column name="user_id" value="1"></column>
+            <column name="user_id" value="0"></column>
             <column name="roles" value="ADMIN,USER,MODERATOR"></column>
         </insert>
         <insert tableName="user_role">
-            <column name="user_id" value="2"></column>
+            <column name="user_id" value="-1"></column>
             <column name="roles" value="USER,MODERATOR"></column>
         </insert>
         <insert tableName="user_role">
-            <column name="user_id" value="3"></column>
+            <column name="user_id" value="-2"></column>
             <column name="roles" value="USER"></column>
         </insert>
     </changeSet>
@@ -78,7 +81,7 @@
 
     <changeSet id="6" author="nnigmat">
         <addColumn tableName="usr">
-            <column name="current_room_id" type="bigint" defaultValue="1">
+            <column name="current_room_id" type="bigint" defaultValue="0">
                 <constraints nullable="false"></constraints>
             </column>
         </addColumn>
@@ -87,15 +90,15 @@
     <changeSet id="7" author="nnigmat">
         <update tableName="user_role">
             <column name="roles" value="ADMIN"></column>
-            <where>user_id = 1</where>
+            <where>user_id = 0</where>
         </update>
         <update tableName="user_role">
             <column name="roles" value="MODERATOR"></column>
-            <where>user_id = 2</where>
+            <where>user_id = -1</where>
         </update>
         <update tableName="user_role">
             <column name="roles" value="USER"></column>
-            <where>user_id = 3</where>
+            <where>user_id = -2</where>
         </update>
     </changeSet>
 </databaseChangeLog>
