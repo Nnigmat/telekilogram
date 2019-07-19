@@ -14,9 +14,18 @@
 <body>
     <div class="container">
     <div th:replace="fragments/navbar :: navbar (title=${room.getName()}, usr=${user})"></div>
-    <div style="overflow-y:scroll; max-height: 700px; word-wrap: break-word;" id="messageBody">
-        <ul th:replace="fragments/message :: messages (${messages})">
-        </ul>
+    <div class="row">
+        <div class="col l8" style="overflow-y:scroll; max-height: 700px; word-wrap: break-word;" id="messageBody">
+            <ul th:replace="fragments/message :: messages (${messages})"></ul>
+        </div>
+        <div class="col l4" style="overflow-y:scroll; max-height: 700px; word-wrap: break-word;">
+            <h6>Admins</h6>
+            <ul th:replace="fragments/members :: members (${admins})"></ul>
+            <h6>Moderators</h6>
+            <ul th:replace="fragments/members :: members (${moderators})"></ul>
+            <h6>Members</h6>
+            <ul th:replace="fragments/members :: members (${members})"></ul>
+        </div>
     </div>
     <form method="post" th:if="${!user.isBanned()}">
         <div class="row">

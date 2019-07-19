@@ -1,0 +1,7 @@
+<ul th:fragment="members (members)" class="collection">
+    <li th:each="mem: ${members}" class="collection-item">
+        <div>
+            <i class="title" th:text="${mem.getUsername()}"></i>
+       </div>
+    </li>
+</ul>

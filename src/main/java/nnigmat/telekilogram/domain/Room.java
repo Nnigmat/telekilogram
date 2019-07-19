@@ -26,6 +26,22 @@ public class Room {
     )
     private Set<User> members = new HashSet<>();
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_rooms",
+            joinColumns = { @JoinColumn(name = "room_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
+    private Set<User> moderators = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_rooms",
+            joinColumns = { @JoinColumn(name = "room_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_id") }
+    )
+    private Set<User> admins = new HashSet<>();
+
     private boolean closed;
 
     public Room() {}
@@ -101,5 +117,21 @@ public class Room {
             }
         }
         return false;
+    }
+
+    public Set<User> getModerators() {
+        return moderators;
+    }
+
+    public void setModerators(Set<User> moderators) {
+        this.moderators = moderators;
+    }
+
+    public Set<User> getAdmins() {
+        return admins;
+    }
+
+    public void setAdmins(Set<User> admins) {
+        this.admins = admins;
     }
 }

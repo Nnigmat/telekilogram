@@ -31,6 +31,9 @@ public class MessageController {
         Room roomFromDb = user.getCurrentRoom();
 
         Iterable<Message> messages = messageRepo.findByRoom(roomFromDb);
+        model.addAttribute("members", roomFromDb.getMembers());
+        model.addAttribute("moderators", roomFromDb.getModerators());
+        model.addAttribute("admins", roomFromDb.getAdmins());
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
         model.addAttribute("room", roomFromDb);
