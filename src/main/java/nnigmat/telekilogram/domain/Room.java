@@ -28,7 +28,7 @@ public class Room {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "user_rooms",
+            name = "moderator_rooms",
             joinColumns = { @JoinColumn(name = "room_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
@@ -36,7 +36,7 @@ public class Room {
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "user_rooms",
+            name = "admin_rooms",
             joinColumns = { @JoinColumn(name = "room_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id") }
     )
