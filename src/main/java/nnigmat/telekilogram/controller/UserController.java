@@ -3,6 +3,7 @@ package nnigmat.telekilogram.controller;
 import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.UserRepo;
+import nnigmat.telekilogram.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,11 +23,11 @@ import java.util.Set;
 public class UserController {
 
     @Autowired
-    private UserRepo userRepo;
+    private UserService userService;
 
     @GetMapping
     public String listUser(@AuthenticationPrincipal User user, Model model) {
-        Iterable<User> users = userRepo.findAll();
+        Iterable<User> users = userService.findAll();
 
         model.addAttribute("user", user);
         model.addAttribute("users", users);
@@ -36,16 +37,10 @@ public class UserController {
     }
 
     @PostMapping("/give_ban/{user}")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
     public String ban(@AuthenticationPrincipal User author, @PathVariable User user){
         if (!author.equals(user) && !user.isAdmin()) {
-            Set<Role> ban = new HashSet<Role>();
-            if (user.isBanned()) {
-                ban.add(Role.USER);
-            } else {
-                ban.add(Role.BAN);
-            }
-            user.setRoles(ban);
-            userRepo.save(user);
+            userService.globalBan(user);
         }
         return "redirect:/user";
     }
@@ -54,14 +49,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public String moderator(@AuthenticationPrincipal User author, @PathVariable User user){
         if (!author.equals(user) && !user.isAdmin()) {
-            Set<Role> ban = new HashSet<Role>();
-            if (user.isModerator()) {
-                ban.add(Role.USER);
-            } else {
-                ban.add(Role.MODERATOR);
-            }
-            user.setRoles(ban);
-            userRepo.save(user);
+            userService.makeGlobalModerator(user);
         }
         return "redirect:/user";
     }

@@ -29,12 +29,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_rooms",
-            joinColumns = { @JoinColumn(name = "user_id") },
-            inverseJoinColumns = { @JoinColumn(name = "room_id") }
-    )
+    @ManyToMany(mappedBy = "members",fetch = FetchType.EAGER)
     private Set<Room> rooms = new HashSet<>();
 
     public void addRoom(Room room) {

@@ -37,6 +37,7 @@ public class MessageController {
         model.addAttribute("members", roomFromDb.getMembers());
         model.addAttribute("moderators", roomFromDb.getModerators());
         model.addAttribute("admins", roomFromDb.getAdmins());
+        model.addAttribute("canDeleteMessage", roomService.isCreator(roomFromDb, user) || roomService.isModerator(roomFromDb, user) || roomService.isAdmin(roomFromDb, user));
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
         model.addAttribute("room", roomFromDb);
@@ -61,9 +62,11 @@ public class MessageController {
     }
 
     @PostMapping("/deleteMessage/{messageId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
-    public String deleteMessage(@PathVariable Long messageId) {
-        messageService.deleteById(messageId);
+    public String deleteMessage(@AuthenticationPrincipal User user, @PathVariable Long messageId) {
+        Room currentRoom = user.getCurrentRoom();
+        if (roomService.isCreator(currentRoom, user) || roomService.isModerator(currentRoom, user) || roomService.isAdmin(currentRoom, user)) {
+            messageService.deleteById(messageId);
+        }
         return "redirect:/room";
     }
 }

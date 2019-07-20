@@ -1,6 +1,7 @@
 package nnigmat.telekilogram.service;
 
 import nnigmat.telekilogram.domain.Room;
+import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.RoomRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,4 +36,21 @@ public class RoomService {
     public Optional<Room> findById(Long id) {
         return roomRepo.findById(id);
     }
+
+    public boolean isCreator(Room room, User user) {
+        return room.isCreator(user);
+    }
+
+    public boolean isMember(Room room, User user) {
+        return room.getMembers().contains(user);
+    }
+
+    public boolean isModerator(Room room, User user) {
+        return room.getModerators().contains(user);
+    }
+
+    public boolean isAdmin(Room room, User user) {
+        return room.getAdmins().contains(user);
+    }
+
 }
