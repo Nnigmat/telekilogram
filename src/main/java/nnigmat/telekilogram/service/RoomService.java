@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +50,10 @@ public class RoomService {
 
     public boolean isAdmin(Room room, User user) {
         return room.getAdmins().contains(user);
+    }
+
+    public Optional<Room> getDefaultRoom() {
+        return roomRepo.findById(0L);
     }
 
 }

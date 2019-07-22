@@ -138,10 +138,9 @@ public class CommandExecutor {
         User usr = userService.findByUsername(userName);
         List<Room> rooms = roomService.findByName(roomName);
         for (Room room : rooms) {
-            if (room.isCreator(user) || user.isAdmin() || user.isModerator()) {
+            if (room.isCreator(user) || roomService.isAdmin(room, user) || roomService.isModerator(room, user)) {
                 room.addMember(usr);
                 userService.save(usr);
-                roomService.save(room);
                 break;
             }
         }

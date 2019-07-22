@@ -63,4 +63,8 @@ public class UserService implements UserDetailsService {
         user.setRoles(ban);
         save(user);
     }
+
+    public Set<Room> getUserRooms(User user) {
+        return user.getRooms();
+    }
 }

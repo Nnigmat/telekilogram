@@ -4,6 +4,11 @@
         <form th:action="'/room/connect/' + ${rm.getId()}" method="post" th:if="${!user.getCurrentRoom().equals(rm)}" class="secondary-content">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" class="waves-effect waves-teal btn-flat">connect</button>
+
+        </form>
+        <form th:action="'/room/delete/' + ${rm.getId()}" method="post" th:if="${rm.isCreator(user)}" class="secondary-content">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <button type="submit" class="waves-effect waves-teal btn-flat">delete</button>
         </form>
     </li>
 </ul>
