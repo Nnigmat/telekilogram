@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -64,7 +65,8 @@ public class UserService implements UserDetailsService {
         save(user);
     }
 
-    public Set<Room> getUserRooms(User user) {
-        return user.getRooms();
+    public Set<Room> getUserRoomsById(Long id) {
+        Optional<User> user = userRepo.findById(id);
+        return user.map(User::getRooms).orElse(null);
     }
 }

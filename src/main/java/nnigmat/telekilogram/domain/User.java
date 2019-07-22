@@ -29,7 +29,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @ManyToMany(mappedBy = "members",fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "members",fetch = FetchType.EAGER)
     private Set<Room> rooms = new HashSet<>();
 
     public void addRoom(Room room) {

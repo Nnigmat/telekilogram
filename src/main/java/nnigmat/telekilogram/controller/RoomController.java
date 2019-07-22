@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -26,7 +27,7 @@ public class RoomController {
 
     @GetMapping("/list")
     public String listRoom(@AuthenticationPrincipal User user, Model model) {
-        Iterable<Room> rooms = userService.getUserRooms(user);
+        Iterable<Room> rooms = userService.getUserRoomsById(user.getId());
 
         model.addAttribute("user", user);
         model.addAttribute("rooms", rooms);
@@ -49,14 +50,18 @@ public class RoomController {
 
     @PostMapping("/delete/{room}")
     public String delete(@AuthenticationPrincipal User user, @PathVariable Room room) {
-        if (user != null && room != null) {
-            if (room.isCreator(user)) {
-                roomService.delete(room);
-
-                Optional<Room> defaultRoom = roomService.getDefaultRoom();
-                defaultRoom.ifPresent(user::setCurrentRoom);
-                userService.save(user);
+        if (user != null && room != null && room.isCreator(user)) {
+            // Get members that connected right now to the room and default room (id = 0)
+            Iterable<User> connectedMembers = roomService.getConnectedMembersById(room.getId());
+            Optional<Room> defaultRoom = roomService.getDefaultRoom();
+            if (defaultRoom.isPresent()) {
+                // Relocate member to default room
+                for (User member : connectedMembers) {
+                    member.setCurrentRoom(defaultRoom.get());
+                }
             }
+            userService.save(user);
+            roomService.delete(room);
         }
 
         return "redirect:/room";

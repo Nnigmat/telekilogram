@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -56,4 +58,20 @@ public class RoomService {
         return roomRepo.findById(0L);
     }
 
+    public Iterable<User> getConnectedMembersById(Long id) {
+        Optional<Room> roomOpt = roomRepo.findById(id);
+        Set<User> connectedMembers = new HashSet<>();
+
+        if (roomOpt.isPresent()) {
+            Room room = roomOpt.get();
+            Iterable<User> members = room.getMembers();
+
+            for (User member : members) {
+                if (member.getCurrentRoom().equals(room)) {
+                    connectedMembers.add(member);
+                }
+            }
+        }
+        return connectedMembers;
+    }
 }
