@@ -4,6 +4,7 @@ import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.UserRepo;
 import nnigmat.telekilogram.service.UserService;
+import nnigmat.telekilogram.service.tos.UserTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,7 +29,7 @@ public class UserController {
 
     @GetMapping
     public String listUser(@AuthenticationPrincipal User user, Model model) {
-        Iterable<User> users = userService.findAll();
+        Collection<UserTO> users = userService.findAll();
 
         model.addAttribute("user", user);
         model.addAttribute("users", users);
@@ -38,7 +40,7 @@ public class UserController {
 
     @PostMapping("/give_ban/{user}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
-    public String ban(@AuthenticationPrincipal User author, @PathVariable User user){
+    public String ban(@AuthenticationPrincipal UserTO author, @PathVariable UserTO user){
         if (!author.equals(user) && !user.isAdmin()) {
             userService.globalBan(user);
         }
@@ -47,9 +49,9 @@ public class UserController {
 
     @PostMapping("/give_moderator/{user}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public String moderator(@AuthenticationPrincipal User author, @PathVariable User user){
+    public String moderator(@AuthenticationPrincipal UserTO author, @PathVariable UserTO user){
         if (!author.equals(user) && !user.isAdmin()) {
-            userService.makeGlobalModerator(user);
+            userService.addGlobalModerator(user);
         }
         return "redirect:/user";
     }

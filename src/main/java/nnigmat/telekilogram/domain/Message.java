@@ -78,9 +78,5 @@ public class Message {
         this.createdTime = createdTime;
     }
 
-    public String getFormattedTime() {
-        SimpleDateFormat df = new SimpleDateFormat("dd MMM yy HH:mm");
 
-        return df.format(this.createdTime);
-    }
 }

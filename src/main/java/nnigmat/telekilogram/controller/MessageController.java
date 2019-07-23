@@ -1,23 +1,18 @@
 package nnigmat.telekilogram.controller;
 
-import nnigmat.telekilogram.domain.Message;
 import nnigmat.telekilogram.domain.Role;
-import nnigmat.telekilogram.domain.Room;
-import nnigmat.telekilogram.domain.User;
-import nnigmat.telekilogram.repos.MessageRepo;
-import nnigmat.telekilogram.repos.RoomRepo;
-import nnigmat.telekilogram.repos.UserRepo;
 import nnigmat.telekilogram.service.MessageService;
 import nnigmat.telekilogram.service.RoomService;
 import nnigmat.telekilogram.service.UserService;
+import nnigmat.telekilogram.service.tos.MessageTO;
+import nnigmat.telekilogram.service.tos.RoomTO;
+import nnigmat.telekilogram.service.tos.UserTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @Controller
 public class MessageController {
@@ -30,17 +25,17 @@ public class MessageController {
     private MessageService messageService;
 
     @GetMapping("/room")
-    public String listMessages(@AuthenticationPrincipal User user, Model model) {
-        Room roomFromDb = userService.getUserCurrentRoom(user);
+    public String listMessages(@AuthenticationPrincipal UserTO user, Model model) {
+        RoomTO currentRoom = roomService.findById(user.getCurrentRoomId());
 
-        Iterable<Message> messages = messageService.findMessagesByRoom(roomFromDb);
-        model.addAttribute("members", roomFromDb.getMembers());
-        model.addAttribute("moderators", roomFromDb.getModerators());
-        model.addAttribute("admins", roomFromDb.getAdmins());
-        model.addAttribute("canDeleteMessage", roomService.isCreator(roomFromDb, user) || roomService.isModerator(roomFromDb, user) || roomService.isAdmin(roomFromDb, user));
+        Iterable<MessageTO> messages = messageService.findMessagesByRoom(currentRoom);
+        model.addAttribute("members", currentRoom.getMembers());
+        model.addAttribute("moderators", currentRoom.getModerators());
+        model.addAttribute("admins", currentRoom.getAdmins());
+        model.addAttribute("canDeleteMessage", roomService.isCreator(currentRoom, user) || roomService.isModerator(currentRoom, user) || roomService.isAdmin(currentRoom, user));
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
-        model.addAttribute("room", roomFromDb);
+        model.addAttribute("room", currentRoom);
         model.addAttribute("Role", Role.class);
 
         return "main";
@@ -48,25 +43,28 @@ public class MessageController {
 
     @PostMapping("/room")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
-    public String addMessage(@AuthenticationPrincipal User user, @RequestParam String text) {
+    public String addMessage(@AuthenticationPrincipal UserTO user, @RequestParam String text) {
         Checker checker = new Checker(text);
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
-            CommandExecutor executor = new CommandExecutor(text, commandName, user, roomService, userService);
+            CommandExecutor executor = new CommandExecutor(text, commandName, user);
             executor.execute();
         } else if (!checker.isEmpty()) {
-            Message message = new Message(text, user.getCurrentRoom(), user);
+            RoomTO room = roomService.findById(user.getCurrentRoomId());
+            MessageTO message = new MessageTO(user, room, text);
             messageService.save(message);
         }
+
         return "redirect:/room";
     }
 
     @PostMapping("/deleteMessage/{messageId}")
-    public String deleteMessage(@AuthenticationPrincipal User user, @PathVariable Long messageId) {
-        Room currentRoom = user.getCurrentRoom();
+    public String deleteMessage(@AuthenticationPrincipal UserTO user, @PathVariable Long messageId) {
+        RoomTO currentRoom = roomService.findById(user.getCurrentRoomId());
         if (roomService.isCreator(currentRoom, user) || roomService.isModerator(currentRoom, user) || roomService.isAdmin(currentRoom, user)) {
             messageService.deleteById(messageId);
         }
+
         return "redirect:/room";
     }
 }

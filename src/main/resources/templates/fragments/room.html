@@ -1,7 +1,7 @@
 <ul th:fragment="rooms (rooms)" class="collection">
     <li th:each="rm: ${rooms}" class="collection-item">
         <i class="title" th:text="${rm.getName()}"></i>
-        <form th:action="'/room/connect/' + ${rm.getId()}" method="post" th:if="${!user.getCurrentRoom().equals(rm)}" class="secondary-content">
+        <form th:action="'/room/connect/' + ${rm.getId()}" method="post" th:if="${!user.getCurrentRoomId().equals(rm.getId())}" class="secondary-content">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <button type="submit" class="waves-effect waves-teal btn-flat">connect</button>
 

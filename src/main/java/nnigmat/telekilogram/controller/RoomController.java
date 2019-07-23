@@ -6,12 +6,15 @@ import nnigmat.telekilogram.domain.User;
 import nnigmat.telekilogram.repos.UserRepo;
 import nnigmat.telekilogram.service.RoomService;
 import nnigmat.telekilogram.service.UserService;
+import nnigmat.telekilogram.service.tos.RoomTO;
+import nnigmat.telekilogram.service.tos.UserTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +29,8 @@ public class RoomController {
     private RoomService roomService;
 
     @GetMapping("/list")
-    public String listRoom(@AuthenticationPrincipal User user, Model model) {
-        Iterable<Room> rooms = userService.getUserRoomsById(user.getId());
+    public String listRoom(@AuthenticationPrincipal UserTO user, Model model) {
+        Collection<RoomTO> rooms = userService.getUserRoomsById(user.getId());
 
         model.addAttribute("user", user);
         model.addAttribute("rooms", rooms);
@@ -37,10 +40,10 @@ public class RoomController {
     }
 
     @PostMapping("/connect/{room}")
-    public String connect(@AuthenticationPrincipal User user, @PathVariable Room room) {
+    public String connect(@AuthenticationPrincipal UserTO user, @PathVariable RoomTO room) {
         if(user != null && room != null) {
             if (room.hasMember(user)) {
-                user.setCurrentRoom(room);
+                user.setCurrentRoomId(room.getId());
                 userService.save(user);
             }
         }
@@ -49,19 +52,20 @@ public class RoomController {
     }
 
     @PostMapping("/delete/{room}")
-    public String delete(@AuthenticationPrincipal User user, @PathVariable Room room) {
+    public String delete(@AuthenticationPrincipal UserTO user, @PathVariable RoomTO room) {
         if (user != null && room != null && room.isCreator(user)) {
             // Get members that connected right now to the room and default room (id = 0)
-            Iterable<User> connectedMembers = roomService.getConnectedMembersById(room.getId());
-            Optional<Room> defaultRoom = roomService.getDefaultRoom();
-            if (defaultRoom.isPresent()) {
+            Collection<UserTO> connectedMembers = roomService.getConnectedMembersById(room.getId());
+            RoomTO defaultRoom = roomService.getDefaultRoom();
+            if (defaultRoom != null) {
                 // Relocate member to default room
-                for (User member : connectedMembers) {
-                    member.setCurrentRoom(defaultRoom.get());
+                for (UserTO member : connectedMembers) {
+                    member.setCurrentRoomId(defaultRoom.getId());
                 }
+
+                userService.save(user);
+                roomService.delete(room);
             }
-            userService.save(user);
-            roomService.delete(room);
         }
 
         return "redirect:/room";

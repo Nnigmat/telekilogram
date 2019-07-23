@@ -7,26 +7,32 @@ import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
 import nnigmat.telekilogram.service.RoomService;
 import nnigmat.telekilogram.service.UserService;
+import nnigmat.telekilogram.service.tos.RoomTO;
+import nnigmat.telekilogram.service.tos.UserTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+@Component
 public class CommandExecutor {
 
-    private String command;
-    private String commandName;
-    private User user;
     private RoomService roomService;
     private UserService userService;
 
-    public CommandExecutor(String command, String commandName, User user, RoomService roomService, UserService userService) {
+    private String command;
+    private String commandName;
+    private UserTO user;
+
+    public CommandExecutor(String command, String commandName, UserTO user) {
         this.command = command;
         this.commandName = commandName;
         this.user = user;
+    }
+
+    @Autowired
+    public CommandExecutor(RoomService roomService, UserService userService) {
         this.roomService = roomService;
         this.userService = userService;
     }
@@ -78,10 +84,9 @@ public class CommandExecutor {
         String roomName = pair.getFirst();
 
         // Find room. If it exists we can't create the new room
-        List<Room> rooms = roomService.findByName(roomName);
+        Collection<RoomTO> rooms = roomService.findByName(roomName);
         if (rooms.isEmpty() && !this.user.isBanned()) {
-            Room newRoom = new Room(roomName, this.user, closed);
-            newRoom.addMember(user);
+            RoomTO newRoom = new RoomTO(roomName, this.user, closed);
             roomService.save(newRoom);
         }
     }
@@ -91,11 +96,11 @@ public class CommandExecutor {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
-        List<Room> rooms = roomService.findByName(roomName);
-        for (Room room : rooms) {
-            if (room != null && room.getId() != 1 && (user.isAdmin() || room.isCreator(user))) {
-                for (User u : room.getMembers()) {
-                    room.removeMember(u);
+        Collection<RoomTO> rooms = roomService.findByName(roomName);
+        for (RoomTO room : rooms) {
+            if (room != null && room.getId() != 0 && (user.isAdmin() || room.isCreator(user))) {
+                for (UserTO usr : room.getMembers()) {
+                    room.removeMember(usr);
                 }
                 roomService.delete(room);
             }
@@ -106,10 +111,9 @@ public class CommandExecutor {
         Pair<String, Integer> pair = parse(0);
         String newRoomName = pair.getFirst();
 
-        Room room = user.getCurrentRoom();
+        RoomTO room = roomService.findById(user.getCurrentRoomId());
         if (room != null && (user.isAdmin() || room.isCreator(user))) {
             room.setName(newRoomName);
-            userService.save(user);
             roomService.save(room);
         }
     }
@@ -118,10 +122,10 @@ public class CommandExecutor {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
-        List<Room> rooms = roomService.findByName(roomName);
-        for (Room room : rooms) {
+        Collection<RoomTO> rooms = roomService.findByName(roomName);
+        for (RoomTO room : rooms) {
             if (room.hasMember(user)) {
-                user.setCurrentRoom(room);
+                user.setCurrentRoomId(room.getId());
                 userService.save(user);
                 break;
             }
@@ -135,9 +139,9 @@ public class CommandExecutor {
         Pair<String, Integer> pair1= parse(pair.getSecond());
         String userName = pair1.getFirst();
 
-        User usr = userService.findByUsername(userName);
-        List<Room> rooms = roomService.findByName(roomName);
-        for (Room room : rooms) {
+        UserTO usr = userService.findByUsername(userName);
+        Collection<RoomTO> rooms = roomService.findByName(roomName);
+        for (RoomTO room : rooms) {
             if (room.isCreator(user) || roomService.isAdmin(room, user) || roomService.isModerator(room, user)) {
                 room.addMember(usr);
                 userService.save(usr);
@@ -147,11 +151,11 @@ public class CommandExecutor {
     }
 
     private void roomDisconnect() {
-        Room room = user.getCurrentRoom();
+        RoomTO room = roomService.findById(user.getCurrentRoomId());
         room.removeMember(user);
-        user.removeRoom(room);
-        Optional<Room> startRoom = roomService.findById((long) 1);
-        startRoom.ifPresent(value -> user.setCurrentRoom(value));
+
+        RoomTO startRoom = roomService.findById((long) 0);
+        user.setCurrentRoomId(startRoom.getId());
 
         if (room.getMembers().size() == 0) {
             roomService.delete(room);
@@ -165,12 +169,12 @@ public class CommandExecutor {
         Pair<String, Integer> pair = parse(0);
         String roomName = pair.getFirst();
 
-        List<Room> rooms = roomService.findByName(roomName);
-        for (Room room : rooms) {
+        Collection<RoomTO> rooms = roomService.findByName(roomName);
+        for (RoomTO room : rooms) {
             if (room.hasMember(user)) {
-                if (user.getCurrentRoom().equals(room)) {
-                    Optional<Room> startRoom = roomService.findById((long) 1);
-                    startRoom.ifPresent(value -> user.setCurrentRoom(value));
+                if (user.getCurrentRoomId().equals(room.getId())) {
+                    RoomTO startRoom = roomService.findById((long) 0);
+                    user.setCurrentRoomId(startRoom.getId());
                 }
                 room.removeMember(user);
                 roomService.save(room);
@@ -186,13 +190,12 @@ public class CommandExecutor {
         Pair<String, Integer> pair1= parse(pair.getSecond());
         String userName = pair1.getFirst();
 
-        List<Room> rooms = roomService.findByName(roomName);
-        User usr = userService.findByUsername(userName);
-        for (Room room : rooms) {
+        Collection<RoomTO> rooms = roomService.findByName(roomName);
+        UserTO usr = userService.findByUsername(userName);
+        for (RoomTO room : rooms) {
             if (room.hasMember(usr) && (user.isModerator() || user.isAdmin() || room.isCreator(user))) {
                 room.removeMember(usr);
                 roomService.save(room);
-                userService.save(usr);
             }
         }
     }
@@ -207,8 +210,8 @@ public class CommandExecutor {
         Pair<String, Integer> pair1= parse(pair.getSecond());
         String newUserName = pair1.getFirst();
 
-        User usr = userService.findByUsername(userName);
-        User otherUsr = userService.findByUsername(newUserName);
+        UserTO usr = userService.findByUsername(userName);
+        UserTO otherUsr = userService.findByUsername(newUserName);
         if (usr != null && otherUsr == null) {
             usr.setUsername(newUserName);
             userService.save(usr);
@@ -222,7 +225,7 @@ public class CommandExecutor {
         Pair<String, Integer> pair = parse(0);
         String userName = pair.getFirst();
 
-        User usr = userService.findByUsername(userName);
+        UserTO usr = userService.findByUsername(userName);
         if (usr != null && user.isAdmin()) {
             if (make) {
                 usr.getRoles().add(Role.MODERATOR);

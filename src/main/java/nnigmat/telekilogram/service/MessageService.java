@@ -3,6 +3,10 @@ package nnigmat.telekilogram.service;
 import nnigmat.telekilogram.domain.Message;
 import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.repos.MessageRepo;
+import nnigmat.telekilogram.service.mappers.MessageMapper;
+import nnigmat.telekilogram.service.mappers.RoomMapper;
+import nnigmat.telekilogram.service.tos.MessageTO;
+import nnigmat.telekilogram.service.tos.RoomTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,24 +20,46 @@ public class MessageService {
     @Autowired
     private MessageRepo messageRepo;
 
-    public Collection<Message> findMessagesByRoom(Room room) {
-        return  messageRepo.findByRoom(room);
+    @Autowired
+    private MessageMapper messageMapper;
+
+    @Autowired
+    private RoomMapper roomMapper;
+
+    public Collection<MessageTO> findMessagesByRoom(RoomTO roomTO) {
+        if (roomTO == null) {
+            return null;
+        }
+        Collection<Message> messages = messageRepo.findByRoom(roomMapper.en(roomTO));
+        return  messageMapper.tos(messages);
     }
 
-    public void save(Message message) {
-        messageRepo.save(message);
+    public void save(MessageTO messageTO) {
+        if (messageTO == null) {
+            return;
+        }
+        messageRepo.save(messageMapper.en(messageTO));
     }
 
-    public Optional<Message> findMessageById(Long id) {
-        return messageRepo.findById(id);
+    public MessageTO findMessageById(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return messageRepo.findById(id).map(value -> messageMapper.to(value)).orElse(null);
     }
 
-    public void delete(Message message) {
-        messageRepo.delete(message);
+    public void delete(MessageTO messageTO) {
+        if (messageTO == null) {
+            return;
+        }
+        messageRepo.delete(messageMapper.en(messageTO));
     }
 
     public void deleteById(Long id) {
-        Optional<Message> message = this.findMessageById(id);
-        message.ifPresent(this::delete);
+        if (id == null) {
+            return;
+        }
+        MessageTO message = this.findMessageById(id);
+        delete(message);
     }
 }

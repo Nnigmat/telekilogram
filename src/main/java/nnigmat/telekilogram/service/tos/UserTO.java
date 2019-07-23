@@ -1,41 +1,23 @@
-package nnigmat.telekilogram.domain;
+package nnigmat.telekilogram.service.tos;
 
+import nnigmat.telekilogram.domain.Role;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
-import javax.persistence.*;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "usr")
-public class User implements UserDetails {
-    @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+@Component
+public class UserTO implements UserDetails {
     private Long id;
-
     private String username;
     private String password;
     private String email;
-    private boolean active;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "current_room_id")
-    private Room currentRoom;
-
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
+    private Long currentRoomId;
     private Set<Role> roles;
-
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "members",fetch = FetchType.EAGER)
-    private Set<Room> rooms = new HashSet<>();
-
-    public void addRoom(Room room) {
-        this.rooms.add(room);
-        room.getMembers().add(this);
-    }
+    private Set<Long> roomIds;
+    private boolean active;
 
     public Long getId() {
         return id;
@@ -66,7 +48,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isActive();
+        return true;
     }
 
     public void setUsername(String username) {
@@ -94,20 +76,12 @@ public class User implements UserDetails {
         this.email = email;
     }
 
-    public boolean isActive() {
-        return active;
+    public Long getCurrentRoomId() {
+        return currentRoomId;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Room getCurrentRoom() {
-        return currentRoom;
-    }
-
-    public void setCurrentRoom(Room current_room) {
-        this.currentRoom = current_room;
+    public void setCurrentRoomId(Long currentRoomId) {
+        this.currentRoomId = currentRoomId;
     }
 
     public Set<Role> getRoles() {
@@ -118,13 +92,29 @@ public class User implements UserDetails {
         this.roles = roles;
     }
 
-    public Set<Room> getRooms() {
-        return rooms;
+    public Set<Long> getRoomIds() {
+        return roomIds;
     }
 
-    public void setRooms(Set<Room> rooms) {
-        this.rooms = rooms;
+    public void setRoomIds(Set<Long> roomsId) {
+        this.roomIds = roomsId;
     }
 
+    public boolean isActive() {
+        return active;
+    }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isAdmin() { return this.getAuthorities().contains(Role.ADMIN); }
+
+    public boolean isModerator() { return this.getAuthorities().contains(Role.MODERATOR); }
+
+    public boolean isBanned() { return this.getAuthorities().contains(Role.BAN); }
+
+    public boolean equals(UserTO user) {
+        return this.getId().equals(user.getId());
+    }
 }

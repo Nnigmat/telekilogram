@@ -4,7 +4,7 @@
             <a href="/room" class="brand-logo"><span th:text="${title}"></span> <i class="material-icons">keyboard</i>&nbsp;</a>
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="/room/list">Rooms</a></li>
-                <li th:if="${usr.isAdminOrModerator()}">
+                <li th:if="${canDeleteMessage}">
                     <a href="/user">Users</a>
                 </li>
                 <li><i><a href="/logout" th:text="${usr.getUsername()}"></a></i></li>
