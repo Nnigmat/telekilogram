@@ -10,12 +10,14 @@ import nnigmat.telekilogram.service.UserService;
 import nnigmat.telekilogram.service.tos.RoomTO;
 import nnigmat.telekilogram.service.tos.UserTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
 
 @Component
+@Configurable
 public class CommandExecutor {
 
     private RoomService roomService;
@@ -25,7 +27,7 @@ public class CommandExecutor {
     private String commandName;
     private UserTO user;
 
-    public CommandExecutor(String command, String commandName, UserTO user) {
+    public void setFields(String command, String commandName, UserTO user) {
         this.command = command;
         this.commandName = commandName;
         this.user = user;

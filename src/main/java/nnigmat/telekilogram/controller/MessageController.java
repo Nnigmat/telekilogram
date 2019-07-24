@@ -23,6 +23,8 @@ public class MessageController {
     private UserService userService;
     @Autowired
     private MessageService messageService;
+    @Autowired
+    private CommandExecutor commandExecutor;
 
     @GetMapping("/room")
     public String listMessages(@AuthenticationPrincipal UserTO user, Model model) {
@@ -47,8 +49,8 @@ public class MessageController {
         Checker checker = new Checker(text);
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
-            CommandExecutor executor = new CommandExecutor(text, commandName, user);
-            executor.execute();
+            commandExecutor.setFields(text, commandName, user);
+            commandExecutor.execute();
         } else if (!checker.isEmpty()) {
             RoomTO room = roomService.findById(user.getCurrentRoomId());
             MessageTO message = new MessageTO(user, room, text);

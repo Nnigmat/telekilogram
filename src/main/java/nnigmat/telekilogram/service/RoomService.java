@@ -55,7 +55,7 @@ public class RoomService {
 
     public Boolean isCreator(RoomTO roomTO, UserTO userTO) {
         if (roomTO == null || userTO == null) {
-            return null;
+            return false;
         }
         return roomTO.getCreator().equals(userTO);
     }
@@ -63,21 +63,21 @@ public class RoomService {
 
     public Boolean isMember(RoomTO roomTO, UserTO userTO) {
         if (roomTO == null || userTO == null) {
-            return null;
+            return false;
         }
         return roomTO.getMembers().contains(userTO);
     }
 
     public Boolean isModerator(RoomTO roomTO, UserTO userTO) {
         if (roomTO == null || userTO == null) {
-            return null;
+            return false;
         }
         return roomTO.getModerators().contains(userTO);
     }
 
     public Boolean isAdmin(RoomTO roomTO, UserTO userTO) {
         if (roomTO == null || userTO == null) {
-            return null;
+            return false;
         }
         return roomTO.getAdmins().contains(userTO);
     }
