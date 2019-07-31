@@ -41,11 +41,39 @@
                     <textarea id="icon_prefix2" class="materialize-textarea" name="text"></textarea>
                     <label for="icon_prefix2" class="" >Message</label>
                 </div>
-                <button type="submit" class="waves-effect waves-teal btn-flat btn-large">Send <i class="material-icons right">send</i></button>
+                <button type="submit" class="waves-effect waves-teal btn-flat btn-large s2">Send <i class="material-icons right">send</i></button>
+                <!-- Modal Help Trigger -->
+                <a class="waves-effect waves-light btn-flat modal-trigger" href="#modal1">Help</a>
             </div>
         </div>
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
     </form>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal modal-fixed-footer">
+        <div class="modal-content">
+            <h4>Available commands</h4>
+            <p>
+                <i>//room create "name of room"</i> - create new public room<br>
+                <i>//room create -c "name of room"</i> - create new closed room<br>
+                <i>//room remove "name of room"</i> - remove room<br>
+                <i>//room rename "name of room"</i> - rename current room<br>
+                <i>//room connect "name of room"</i> - connect to the room<br>
+                <i>//room connect "name of room" -l "username"</i> - connect user to the room<br>
+                <i>//room disconnect</i> - disconnect from current room<br>
+                <i>//room disconnect "name of room"</i> - disconnect from room<br>
+                <i>//room disconnect "name of room" -l "username"</i> - disconnect user from room<br>
+                <i>//room disconnect "name of room" -l "username" -m 15</i> - disconnect user from room for 15 minutes<br>
+                <i>//user rename "username" "new username"</i> - rename user in current room<br>
+                <i>//user ban "name of room" -l "username" -m 15</i> - ban user for 15 minutes in room<br>
+                <i>//user moderator -n "username"</i> - add to moderators<br>
+                <i>//user moderator -d "username"</i> - remove from moderators<br>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-green btn-flat">Thanks!</a>
+        </div>
     </div>
 
     <!-- Compiled and minified JavaScript -->
@@ -54,6 +82,12 @@
     <script>
         var messageBody = document.querySelector("#messageBody");
         messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;
+
+        M.AutoInit();
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('.modal');
+            var instances = M.Modal.init(elems, options);
+        });
     </script>
 </body>
 </html>
