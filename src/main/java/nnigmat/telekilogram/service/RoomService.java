@@ -107,4 +107,8 @@ public class RoomService {
         }
         return userMapper.tos(connectedMembers);
     }
+
+    public boolean userCanDeleteMessage(RoomTO currentRoom, UserTO user) {
+        return isCreator(currentRoom, user) || isModerator(currentRoom, user) || isAdmin(currentRoom, user);
+    }
 }

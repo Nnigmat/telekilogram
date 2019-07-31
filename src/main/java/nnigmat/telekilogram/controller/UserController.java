@@ -28,7 +28,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public String listUser(@AuthenticationPrincipal User user, Model model) {
+    public String listUser(@AuthenticationPrincipal UserTO user, Model model) {
         Collection<UserTO> users = userService.findAll();
 
         model.addAttribute("user", user);

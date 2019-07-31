@@ -126,5 +126,4 @@ public class User implements UserDetails {
         this.rooms = rooms;
     }
 
-
 }

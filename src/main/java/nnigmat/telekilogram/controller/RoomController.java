@@ -30,6 +30,10 @@ public class RoomController {
 
     @GetMapping("/list")
     public String listRoom(@AuthenticationPrincipal UserTO user, Model model) {
+        if (user == null) {
+            // Make redirect
+            return "index";
+        }
         Collection<RoomTO> rooms = userService.getUserRoomsById(user.getId());
 
         model.addAttribute("user", user);

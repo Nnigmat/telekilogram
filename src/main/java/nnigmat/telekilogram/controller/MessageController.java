@@ -34,7 +34,7 @@ public class MessageController {
         model.addAttribute("members", currentRoom.getMembers());
         model.addAttribute("moderators", currentRoom.getModerators());
         model.addAttribute("admins", currentRoom.getAdmins());
-        model.addAttribute("canDeleteMessage", roomService.isCreator(currentRoom, user) || roomService.isModerator(currentRoom, user) || roomService.isAdmin(currentRoom, user));
+        model.addAttribute("canDeleteMessage", roomService.userCanDeleteMessage(currentRoom, user));
         model.addAttribute("messages", messages);
         model.addAttribute("user", user);
         model.addAttribute("room", currentRoom);
@@ -63,7 +63,8 @@ public class MessageController {
     @PostMapping("/deleteMessage/{messageId}")
     public String deleteMessage(@AuthenticationPrincipal UserTO user, @PathVariable Long messageId) {
         RoomTO currentRoom = roomService.findById(user.getCurrentRoomId());
-        if (roomService.isCreator(currentRoom, user) || roomService.isModerator(currentRoom, user) || roomService.isAdmin(currentRoom, user)) {
+        boolean canDeleteMessage = roomService.userCanDeleteMessage(currentRoom, user);
+        if (canDeleteMessage) {
             messageService.deleteById(messageId);
         }
 

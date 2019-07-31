@@ -101,8 +101,10 @@ public class CommandExecutor {
         Collection<RoomTO> rooms = roomService.findByName(roomName);
         for (RoomTO room : rooms) {
             if (room != null && room.getId() != 0 && (user.isAdmin() || room.isCreator(user))) {
-                for (UserTO usr : room.getMembers()) {
-                    room.removeMember(usr);
+                for (UserTO usr: room.getMembers()) {
+                    usr.removeRoom(room);
+                    usr.setCurrentRoomId(0L);
+                    userService.save(usr);
                 }
                 roomService.delete(room);
             }
@@ -143,10 +145,14 @@ public class CommandExecutor {
 
         UserTO usr = userService.findByUsername(userName);
         Collection<RoomTO> rooms = roomService.findByName(roomName);
+        if (usr == null || rooms == null) {
+            return;
+        }
+
         for (RoomTO room : rooms) {
             if (room.isCreator(user) || roomService.isAdmin(room, user) || roomService.isModerator(room, user)) {
                 room.addMember(usr);
-                userService.save(usr);
+                roomService.save(room);
                 break;
             }
         }

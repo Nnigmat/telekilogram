@@ -50,8 +50,10 @@ public class UserService implements UserDetailsService {
         if (userTO == null) {
             return;
         }
-
-        userRepo.save(userMapper.en(userTO));
+        User user = userMapper.en(userTO);
+        Optional<Room> room = roomRepo.findById(user.getCurrentRoom().getId());
+        room.ifPresent(user::setCurrentRoom);
+        userRepo.save(user);
     }
 
     public UserTO findByUsername(String username) {

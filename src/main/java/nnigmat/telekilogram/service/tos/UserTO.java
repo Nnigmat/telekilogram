@@ -117,4 +117,8 @@ public class UserTO implements UserDetails {
     public boolean equals(UserTO user) {
         return this.getId().equals(user.getId());
     }
+
+    public void removeRoom(RoomTO room) {
+        roomIds.remove(room.getId());
+    }
 }
