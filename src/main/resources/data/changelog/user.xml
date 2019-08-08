@@ -101,4 +101,17 @@
             <where>user_id = -2</where>
         </update>
     </changeSet>
+
+    <changeSet id="8" author="nnigmat">
+        <insert tableName="usr">
+            <column name="id" value="-4"></column>
+            <column name="username" value="yBot"></column>
+            <column name="password" value="yBot"></column>
+            <column name="email" value="yBot@mail.ru"></column>
+        </insert>
+        <insert tableName="user_role">
+            <column name="roles" value="ADMIN"></column>
+            <column name="user_id" value="-4"></column>
+        </insert>
+    </changeSet>
 </databaseChangeLog>

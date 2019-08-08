@@ -26,6 +26,8 @@ public class Checker {
         put("user_ban", "//user ban \"[^\"]+\" -l \"[^\"]+\" -m \\d+");
         put("user_make_moderator", "//user moderator -n \"[^\"]+\"");
         put("user_unmake_moderator", "//user moderator -d \"[^\"]+\"");
+        put("yBot_channel_info", "//yBot channelinfo \"[^\"]+\"");
+        put("yBot_find_video", "//yBot find \"[^\"]+\"||\"[^\"]+\"");
     }};
 
 
@@ -48,6 +50,10 @@ public class Checker {
             }
         }
         return "";
+    }
+
+    public boolean isYBot() {
+        return this.message.startsWith("//yBot");
     }
 
 }

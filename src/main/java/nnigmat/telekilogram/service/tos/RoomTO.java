@@ -1,5 +1,6 @@
 package nnigmat.telekilogram.service.tos;
 
+import nnigmat.telekilogram.domain.User;
 import org.springframework.stereotype.Component;
 
 import java.util.HashSet;
@@ -102,5 +103,25 @@ public class RoomTO {
 
     public void addMember(UserTO userTO) {
         members.add(userTO);
+    }
+
+    public boolean isAdmin(UserTO userTO) {
+        return userTO != null && admins.contains(userTO);
+    }
+
+    public void addModerator(UserTO userTO) {
+        moderators.add(userTO);
+    }
+
+    public void removeModerator(UserTO userTO) {
+        moderators.remove(userTO);
+    }
+
+    public void addAdmin(UserTO userTO) {
+        admins.add(userTO);
+    }
+
+    public void removeAdmin(UserTO userTO) {
+        admins.remove(userTO);
     }
 }

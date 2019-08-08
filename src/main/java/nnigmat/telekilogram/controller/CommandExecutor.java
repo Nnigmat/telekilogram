@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.*;
 
 @Component
@@ -22,10 +23,13 @@ public class CommandExecutor {
 
     private RoomService roomService;
     private UserService userService;
+    private YBot yBot;
 
     private String command;
     private String commandName;
     private UserTO user;
+
+    private Pair<String, ArrayList<String>> yBotResult;
 
     public void setFields(String command, String commandName, UserTO user) {
         this.command = command;
@@ -34,12 +38,13 @@ public class CommandExecutor {
     }
 
     @Autowired
-    public CommandExecutor(RoomService roomService, UserService userService) {
+    public CommandExecutor(RoomService roomService, UserService userService, YBot yBot) {
         this.roomService = roomService;
         this.userService = userService;
+        this.yBot = yBot;
     }
 
-    public void execute() {
+    public void execute() throws IOException {
         switch (this.commandName) {
             case (""): break;
             case ("help"): break;
@@ -71,10 +76,11 @@ public class CommandExecutor {
                                         break;
             case ("user_unmake_moderator"): this.userModerator(false);
                                         break;
+            case("yBot_channel_info"): this.yBotChannelInfo();
         }
     }
 
-    public Pair<String, Integer> parse(int startPos) {
+    private Pair<String, Integer> parse(int startPos) {
         int start = command.indexOf("\"", startPos);
         int end = command.indexOf("\"", start+1);
         return Pair.of((String)command.substring(start+1, end),(Integer)end+1);
@@ -234,17 +240,32 @@ public class CommandExecutor {
         String userName = pair.getFirst();
 
         UserTO usr = userService.findByUsername(userName);
-        if (usr != null && user.isAdmin()) {
+        RoomTO currentRoom = roomService.findById(user.getCurrentRoomId());
+        if (currentRoom.isCreator(user) || currentRoom.isAdmin(user)) {
             if (make) {
-                usr.getRoles().add(Role.MODERATOR);
+                currentRoom.addModerator(usr);
             } else {
-                usr.getRoles().add(Role.USER);
+                currentRoom.removeModerator(usr);
             }
-            userService.save(usr);
+            roomService.save(currentRoom);
         }
     }
 
     public String getCommand() {
         return this.command;
+    }
+
+    private void yBotChannelInfo() throws IOException {
+        Pair<String, Integer> pair = parse(0);
+        String channelName = pair.getFirst();
+        yBotResult = yBot.getChannelInfo(channelName);
+    }
+
+    public Pair<String, ArrayList<String>> getyBotResult() {
+        return yBotResult;
+    }
+
+    public void setyBotResult(Pair<String, ArrayList<String>> yBotResult) {
+        this.yBotResult = yBotResult;
     }
 }

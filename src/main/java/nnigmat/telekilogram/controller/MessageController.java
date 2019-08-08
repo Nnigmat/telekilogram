@@ -1,18 +1,22 @@
 package nnigmat.telekilogram.controller;
 
+import nnigmat.telekilogram.domain.Message;
 import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.service.MessageService;
-import nnigmat.telekilogram.service.RoomService;
-import nnigmat.telekilogram.service.UserService;
+import nnigmat.telekilogram.service.RoomService; import nnigmat.telekilogram.service.UserService;
 import nnigmat.telekilogram.service.tos.MessageTO;
 import nnigmat.telekilogram.service.tos.RoomTO;
 import nnigmat.telekilogram.service.tos.UserTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Controller
 public class MessageController {
@@ -25,9 +29,13 @@ public class MessageController {
     private MessageService messageService;
     @Autowired
     private CommandExecutor commandExecutor;
+    private UserTO yBot;
 
     @GetMapping("/room")
     public String listMessages(@AuthenticationPrincipal UserTO user, Model model) {
+        if (yBot == null) {
+            yBot = userService.findByUsername("yBot");
+        }
         RoomTO currentRoom = roomService.findById(user.getCurrentRoomId());
 
         Iterable<MessageTO> messages = messageService.findMessagesByRoom(currentRoom);
@@ -45,14 +53,23 @@ public class MessageController {
 
     @PostMapping("/room")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER', 'MODERATOR')")
-    public String addMessage(@AuthenticationPrincipal UserTO user, @RequestParam String text) {
+    public String addMessage(@AuthenticationPrincipal UserTO user, @RequestParam String text) throws IOException {
         Checker checker = new Checker(text);
+        RoomTO room = roomService.findById(user.getCurrentRoomId());
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
             commandExecutor.setFields(text, commandName, user);
             commandExecutor.execute();
+            if (checker.isYBot()) {
+                Pair<String, ArrayList<String>> pair = commandExecutor.getyBotResult();
+                MessageTO message = new MessageTO(yBot, room, text);
+                MessageTO channelHref = new MessageTO(yBot, room, pair.getFirst());
+                MessageTO videos = new MessageTO(yBot, room, String.join("\n", pair.getSecond()));
+                messageService.save(message);
+                messageService.save(channelHref);
+                messageService.save(videos);
+            }
         } else if (!checker.isEmpty()) {
-            RoomTO room = roomService.findById(user.getCurrentRoomId());
             MessageTO message = new MessageTO(user, room, text);
             messageService.save(message);
         }
