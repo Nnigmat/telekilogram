@@ -27,7 +27,8 @@ public class Checker {
         put("user_make_moderator", "//user moderator -n \"[^\"]+\"");
         put("user_unmake_moderator", "//user moderator -d \"[^\"]+\"");
         put("yBot_channel_info", "//yBot channelinfo \"[^\"]+\"");
-        put("yBot_find_video", "//yBot find \"[^\"]+\"||\"[^\"]+\"");
+        put("yBot_find_video", "//yBot find \"[^\"]+\" \"[^\"]+\"");
+        put("yBot_random_video_comment", "//yBot videoCommentRandom \"[^\"]+\" \"[^\"]+\"");
     }};
 
 

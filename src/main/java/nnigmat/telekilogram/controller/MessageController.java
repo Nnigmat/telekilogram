@@ -58,17 +58,8 @@ public class MessageController {
         RoomTO room = roomService.findById(user.getCurrentRoomId());
         if (checker.isCommand()) {
             String commandName = checker.checkCommand();
-            commandExecutor.setFields(text, commandName, user);
+            commandExecutor.setFields(text, commandName, user, room, text);
             commandExecutor.execute();
-            if (checker.isYBot()) {
-                Pair<String, ArrayList<String>> pair = commandExecutor.getyBotResult();
-                MessageTO message = new MessageTO(yBot, room, text);
-                MessageTO channelHref = new MessageTO(yBot, room, pair.getFirst());
-                MessageTO videos = new MessageTO(yBot, room, String.join("\n", pair.getSecond()));
-                messageService.save(message);
-                messageService.save(channelHref);
-                messageService.save(videos);
-            }
         } else if (!checker.isEmpty()) {
             MessageTO message = new MessageTO(user, room, text);
             messageService.save(message);

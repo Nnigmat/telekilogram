@@ -1,12 +1,16 @@
 package nnigmat.telekilogram.controller;
 
+import nnigmat.telekilogram.domain.Message;
 import nnigmat.telekilogram.domain.Role;
 import nnigmat.telekilogram.domain.Room;
 import nnigmat.telekilogram.domain.User;
+import nnigmat.telekilogram.repos.MessageRepo;
 import nnigmat.telekilogram.repos.RoomRepo;
 import nnigmat.telekilogram.repos.UserRepo;
+import nnigmat.telekilogram.service.MessageService;
 import nnigmat.telekilogram.service.RoomService;
 import nnigmat.telekilogram.service.UserService;
+import nnigmat.telekilogram.service.tos.MessageTO;
 import nnigmat.telekilogram.service.tos.RoomTO;
 import nnigmat.telekilogram.service.tos.UserTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,25 +27,31 @@ public class CommandExecutor {
 
     private RoomService roomService;
     private UserService userService;
+    private MessageService messageService;
     private YBot yBot;
 
     private String command;
     private String commandName;
     private UserTO user;
+    private RoomTO room;
+    private String text;
+    private UserTO yBotAccount;
 
-    private Pair<String, ArrayList<String>> yBotResult;
-
-    public void setFields(String command, String commandName, UserTO user) {
+    public void setFields(String command, String commandName, UserTO user, RoomTO room, String text) {
         this.command = command;
         this.commandName = commandName;
         this.user = user;
+        this.room = room;
+        this.text = text;
     }
 
     @Autowired
-    public CommandExecutor(RoomService roomService, UserService userService, YBot yBot) {
+    public CommandExecutor(RoomService roomService, UserService userService, YBot yBot, MessageService messageService) {
         this.roomService = roomService;
         this.userService = userService;
+        this.messageService = messageService;
         this.yBot = yBot;
+        this.yBotAccount = userService.findByUsername("yBot");
     }
 
     public void execute() throws IOException {
@@ -77,6 +87,12 @@ public class CommandExecutor {
             case ("user_unmake_moderator"): this.userModerator(false);
                                         break;
             case("yBot_channel_info"): this.yBotChannelInfo();
+                                        break;
+            case("yBot_find_video"): this.yBotFindVideo(false, false);
+                                        break;
+            case("yBot_random_video_comment"): this.yBotRandomVideoComment();
+                                        break;
+
         }
     }
 
@@ -258,14 +274,46 @@ public class CommandExecutor {
     private void yBotChannelInfo() throws IOException {
         Pair<String, Integer> pair = parse(0);
         String channelName = pair.getFirst();
-        yBotResult = yBot.getChannelInfo(channelName);
+        Pair<String, ArrayList<String>> res = yBot.getChannelInfo(channelName);
+
+        MessageTO message = new MessageTO(yBotAccount, room, text);
+        MessageTO channelHref = new MessageTO(yBotAccount, room, res.getFirst());
+        MessageTO videos = new MessageTO(yBotAccount, room, String.join("\n", res.getSecond()));
+        messageService.save(message);
+        messageService.save(channelHref);
+        messageService.save(videos);
     }
 
-    public Pair<String, ArrayList<String>> getyBotResult() {
-        return yBotResult;
+    private void yBotFindVideo(boolean views, boolean likes) throws IOException {
+        Pair<String, Integer> pair = parse(0);
+        String channelName = pair.getFirst();
+        pair = parse(pair.getSecond());
+        String videoName = pair.getFirst();
+        HashMap<String, String> res = yBot.getVideoInfo(channelName, videoName);
+
+        MessageTO msg = new MessageTO(yBotAccount, room, text);
+        MessageTO videoHref = new MessageTO(yBotAccount, room, res.get("href"));
+        MessageTO viewsCount = new MessageTO(yBotAccount, room, res.get("views"));
+        MessageTO likeCount = new MessageTO(yBotAccount, room, res.get("likes"));
+
+        messageService.save(msg);
+        messageService.save(videoHref);
+
+        if (views) messageService.save(viewsCount);
+        if (likes) messageService.save(videoHref);
     }
 
-    public void setyBotResult(Pair<String, ArrayList<String>> yBotResult) {
-        this.yBotResult = yBotResult;
+    private void yBotRandomVideoComment() throws IOException {
+        Pair<String, Integer> pair = parse(0);
+        String channelName = pair.getFirst();
+        pair = parse(pair.getSecond());
+        String videoName = pair.getFirst();
+        Pair<String, String> res = yBot.getRandomVideoComment(channelName, videoName);
+
+        MessageTO userLogin = new MessageTO(yBotAccount, room, res.getFirst());
+        MessageTO comment = new MessageTO(yBotAccount, room, res.getSecond());
+
+        messageService.save(userLogin);
+        messageService.save(comment);
     }
 }
