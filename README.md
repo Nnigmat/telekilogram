@@ -1,4 +1,5 @@
-# telekilogram
+# Java Spring Web application: Telekilogram
+Was making this project during the summer internship
 
 To start the project you need to change application.properties
 ```
